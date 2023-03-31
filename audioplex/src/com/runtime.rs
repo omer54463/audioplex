@@ -1,11 +1,9 @@
+use crate::com::creatable_interface::CreatableInterface;
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime_mode::RuntimeMode},
     error::Error,
 };
-use windows::{
-    core::GUID,
-    Win32::System::Com::{CoCreateInstance, CoInitializeEx, CoUninitialize, CLSCTX_ALL},
-};
+use windows::Win32::System::Com::{CoCreateInstance, CoInitializeEx, CoUninitialize, CLSCTX_ALL};
 
 pub(crate) struct Runtime {}
 
@@ -16,11 +14,10 @@ impl Runtime {
             .map_err(|error| Error::WindowsError(error))
     }
 
-    pub(crate) fn create_instance<'a, I: Interface<'a>>(
+    pub(crate) fn create_instance<'a, I: CreatableInterface<'a>>(
         &'a self,
-        guid: &GUID,
     ) -> Result<InterfaceWrapper<I>, Error> {
-        unsafe { CoCreateInstance(guid, None, CLSCTX_ALL) }
+        unsafe { CoCreateInstance(&I::get_guid(), None, CLSCTX_ALL) }
             .map(|unsafe_interface| I::new(&self, unsafe_interface))
             .map(|interface| InterfaceWrapper::new(interface))
             .map_err(|error| Error::WindowsError(error))

@@ -1,6 +1,5 @@
-use windows::Win32::Media::Audio::{eAll, eCapture, eRender, EDataFlow};
-
 use crate::error::Error;
+use windows::Win32::Media::Audio::{eAll, eCapture, eRender, EDataFlow};
 
 pub(crate) enum DataFlow {
     Render,

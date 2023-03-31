@@ -1,6 +1,5 @@
-use windows::Win32::System::Com::{COINIT, COINIT_APARTMENTTHREADED, COINIT_MULTITHREADED};
-
 use crate::error::Error;
+use windows::Win32::System::Com::{COINIT, COINIT_APARTMENTTHREADED, COINIT_MULTITHREADED};
 
 pub(crate) enum RuntimeMode {
     SingleThreaded,

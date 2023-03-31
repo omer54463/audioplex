@@ -1,4 +1,4 @@
-use super::property_type::PropertyType;
+use crate::audio::property_type::PropertyType;
 use crate::error::Error;
 use windows::Win32::{
     Devices::{

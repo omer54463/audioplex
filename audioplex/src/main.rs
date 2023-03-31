@@ -11,12 +11,11 @@ use audio::data_flow::DataFlow;
 use audio::device_enumerator::DeviceEnumerator;
 use audio::device_state::DeviceState;
 use error::Error;
-use windows::Win32::Media::Audio::MMDeviceEnumerator;
 
 fn main() -> Result<(), Error> {
     let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;
 
-    let device_enumerator = runtime.create_instance::<DeviceEnumerator>(&MMDeviceEnumerator)?;
+    let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
     let device_collection =
         device_enumerator.get_device_collection(DataFlow::All, DeviceState::Active)?;

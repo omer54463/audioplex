@@ -1,3 +1,4 @@
+use crate::audio::property_type::PropertyType;
 use std::string::FromUtf16Error;
 use thiserror::Error;
 use windows::Win32::{
@@ -5,8 +6,6 @@ use windows::Win32::{
     System::Com::{COINIT, STGM},
     UI::Shell::PropertiesSystem::PROPERTYKEY,
 };
-
-use crate::audio::property_type::PropertyType;
 
 #[derive(Error, Debug)]
 pub(crate) enum Error {

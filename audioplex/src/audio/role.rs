@@ -1,6 +1,5 @@
-use windows::Win32::Media::Audio::{eCommunications, eConsole, eMultimedia, ERole};
-
 use crate::error::Error;
+use windows::Win32::Media::Audio::{eCommunications, eConsole, eMultimedia, ERole};
 
 pub(crate) enum Role {
     Console,

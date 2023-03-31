@@ -1,13 +1,13 @@
+use crate::audio::device::Device;
+use crate::audio::role::Role;
+use crate::com::creatable_interface::CreatableInterface;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
 use crate::{
     audio::data_flow::DataFlow, audio::device_collection::DeviceCollection,
     audio::device_state::DeviceState, error::Error,
 };
 use windows::core::PCWSTR;
-use windows::Win32::Media::Audio::IMMDeviceEnumerator;
-
-use super::device::Device;
-use super::role::Role;
+use windows::Win32::Media::Audio::{IMMDeviceEnumerator, MMDeviceEnumerator};
 
 pub(crate) struct DeviceEnumerator<'a> {
     runtime: &'a Runtime,
@@ -22,6 +22,12 @@ impl<'a> Interface<'a> for DeviceEnumerator<'a> {
             runtime,
             unsafe_interface,
         }
+    }
+}
+
+impl<'a> CreatableInterface<'a> for DeviceEnumerator<'a> {
+    fn get_guid() -> windows::core::GUID {
+        return MMDeviceEnumerator;
     }
 }
 
