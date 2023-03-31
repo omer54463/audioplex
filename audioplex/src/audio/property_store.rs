@@ -4,23 +4,19 @@ use windows::Win32::{
     System::Com::StructuredStorage::PROPVARIANT, UI::Shell::PropertiesSystem::IPropertyStore,
 };
 
-pub(crate) struct PropertyStore<'a> {
-    runtime: &'a Runtime,
+pub(crate) struct PropertyStore {
     unsafe_interface: IPropertyStore,
 }
 
-impl<'a> Interface<'a> for PropertyStore<'a> {
+impl<'a> Interface<'a> for PropertyStore {
     type UnsafeInterface = IPropertyStore;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
-        Self {
-            runtime,
-            unsafe_interface,
-        }
+    fn new(_: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+        Self { unsafe_interface }
     }
 }
 
-impl<'a> PropertyStore<'a> {
+impl PropertyStore {
     pub(crate) fn get_string(&self, property_key: PropertyKey) -> Result<String, Error> {
         if property_key.property_type() == PropertyType::String {
             unsafe {

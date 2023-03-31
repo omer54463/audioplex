@@ -64,8 +64,4 @@ impl<'a> DeviceEnumerator<'a> {
             .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
             .map_err(Error::from)
     }
-
-    // pub(crate) fn set_notification_handler(&self) -> Result<(), Error> {
-    //     unsafe { self.unsafe_interface.RegisterEndpointNotificationCallback() }.map_err(Error::from)
-    // }
 }
