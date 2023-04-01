@@ -39,6 +39,9 @@ fn main() -> Result<(), Error> {
             let device_name = property_store.get_string(PropertyKey::DeviceName)?;
             println!("Device Name: {}", device_name);
 
+            let icon_path = property_store.get_string(PropertyKey::IconPath)?;
+            println!("Icon Path: {}", icon_path);
+
             let enumerator_name = property_store.get_string(PropertyKey::EnumeratorName)?;
             println!("Enumerator Name: {}", enumerator_name);
 
@@ -60,16 +63,19 @@ fn main() -> Result<(), Error> {
             for session_index in 0..session_count {
                 let session_control = session_enumerator.get_session_control(session_index)?;
 
-                let session_display_name = session_control.get_display_name()?;
-                println!("- Session Display Name: {}", session_display_name);
+                let display_name = session_control.get_display_name()?;
+                println!("- Display Name: {}", display_name);
+
+                let icon_path = session_control.get_icon_path()?;
+                println!("- Icon Path: {}", icon_path);
 
                 let session_state = session_control.get_state()?;
                 println!("- Session State: {:?}", session_state);
 
                 let session_extended_control = session_control.get_extended_control()?;
 
-                let session_is_system_sounds = session_extended_control.is_system_sounds()?;
-                println!("- Is System Sounds: {}", session_is_system_sounds);
+                let is_system = session_extended_control.is_system()?;
+                println!("- Is System: {}", is_system);
 
                 let process_id = session_extended_control.get_process_id()?;
                 println!("- Process ID: {:?}", process_id);

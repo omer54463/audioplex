@@ -27,7 +27,7 @@ impl SessionExtendedControl {
         unsafe { self.unsafe_interface.GetProcessId() }.map_err(Error::from)
     }
 
-    pub(crate) fn is_system_sounds(&self) -> Result<bool, Error> {
+    pub(crate) fn is_system(&self) -> Result<bool, Error> {
         let hresult = unsafe {
             (Vtable::vtable(&self.unsafe_interface).IsSystemSoundsSession)(Vtable::as_raw(
                 &self.unsafe_interface,

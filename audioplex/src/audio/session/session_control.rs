@@ -30,6 +30,12 @@ impl<'a> SessionControl<'a> {
             .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
     }
 
+    pub(crate) fn get_icon_path(&self) -> Result<String, Error> {
+        unsafe { self.unsafe_interface.GetIconPath() }
+            .map_err(Error::from)
+            .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
+    }
+
     pub(crate) fn get_state(&self) -> Result<SessionState, Error> {
         unsafe { self.unsafe_interface.GetState() }
             .map_err(Error::from)

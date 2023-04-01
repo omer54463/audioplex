@@ -4,8 +4,8 @@ use windows::Win32::{
     Devices::{
         FunctionDiscovery::PKEY_Device_FriendlyName,
         Properties::{
-            DEVPKEY_DeviceInterface_FriendlyName, DEVPKEY_Device_DeviceDesc,
-            DEVPKEY_Device_EnumeratorName, DEVPROPKEY,
+            DEVPKEY_DeviceClass_IconPath, DEVPKEY_DeviceInterface_FriendlyName,
+            DEVPKEY_Device_DeviceDesc, DEVPKEY_Device_EnumeratorName, DEVPROPKEY,
         },
     },
     UI::Shell::PropertiesSystem::PROPERTYKEY,
@@ -14,6 +14,7 @@ use windows::Win32::{
 #[derive(Clone, Copy)]
 pub(crate) enum PropertyKey {
     DeviceName,
+    IconPath,
     EnumeratorName,
     InterfaceName,
     DeviceDescription,
@@ -23,6 +24,7 @@ impl PropertyKey {
     pub(crate) fn property_type(&self) -> PropertyType {
         match self {
             Self::DeviceName => PropertyType::String,
+            Self::IconPath => PropertyType::String,
             Self::EnumeratorName => PropertyType::String,
             Self::InterfaceName => PropertyType::String,
             Self::DeviceDescription => PropertyType::String,
@@ -36,6 +38,7 @@ impl TryFrom<PROPERTYKEY> for PropertyKey {
     fn try_from(property_key: PROPERTYKEY) -> Result<Self, Self::Error> {
         match property_key.fmtid {
             fmtid if fmtid == PKEY_Device_FriendlyName.fmtid => Ok(Self::DeviceName),
+            fmtid if fmtid == DEVPKEY_DeviceClass_IconPath.fmtid => Ok(Self::IconPath),
             fmtid if fmtid == DEVPKEY_Device_EnumeratorName.fmtid => Ok(Self::EnumeratorName),
             fmtid if fmtid == DEVPKEY_DeviceInterface_FriendlyName.fmtid => Ok(Self::InterfaceName),
             fmtid if fmtid == DEVPKEY_Device_DeviceDesc.fmtid => Ok(Self::DeviceDescription),
@@ -48,6 +51,7 @@ impl Into<PROPERTYKEY> for PropertyKey {
     fn into(self) -> PROPERTYKEY {
         match self {
             Self::DeviceName => PKEY_Device_FriendlyName,
+            Self::IconPath => to_property_key(DEVPKEY_DeviceClass_IconPath),
             Self::EnumeratorName => to_property_key(DEVPKEY_Device_EnumeratorName),
             Self::InterfaceName => to_property_key(DEVPKEY_DeviceInterface_FriendlyName),
             Self::DeviceDescription => to_property_key(DEVPKEY_Device_DeviceDesc),
