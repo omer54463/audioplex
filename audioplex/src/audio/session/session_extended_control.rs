@@ -10,23 +10,19 @@ use windows::{
     },
 };
 
-pub(crate) struct SessionExtendedControl<'a> {
-    runtime: &'a Runtime,
+pub(crate) struct SessionExtendedControl {
     unsafe_interface: IAudioSessionControl2,
 }
 
-impl<'a> Interface<'a> for SessionExtendedControl<'a> {
+impl<'a> Interface<'a> for SessionExtendedControl {
     type UnsafeInterface = IAudioSessionControl2;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
-        Self {
-            runtime,
-            unsafe_interface,
-        }
+    fn new(_: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+        Self { unsafe_interface }
     }
 }
 
-impl<'a> SessionExtendedControl<'a> {
+impl SessionExtendedControl {
     pub(crate) fn get_process_id(&self) -> Result<u32, Error> {
         unsafe { self.unsafe_interface.GetProcessId() }.map_err(Error::from)
     }
