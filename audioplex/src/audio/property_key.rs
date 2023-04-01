@@ -20,7 +20,7 @@ pub(crate) enum PropertyKey {
 }
 
 impl PropertyKey {
-    pub(crate) fn property_type(self) -> PropertyType {
+    pub(crate) fn property_type(&self) -> PropertyType {
         match self {
             Self::DeviceName => PropertyType::String,
             Self::EnumeratorName => PropertyType::String,

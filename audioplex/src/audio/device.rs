@@ -1,11 +1,12 @@
+use crate::audio::device_state::DeviceState;
+use crate::audio::session_manager::SessionManager;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
 use crate::{
     audio::{property_store::PropertyStore, property_store_access::PropertyStoreAccess},
     error::Error,
 };
 use windows::Win32::Media::Audio::IMMDevice;
-
-use super::device_state::DeviceState;
+use windows::Win32::System::Com::CLSCTX_ALL;
 
 pub(crate) struct Device<'a> {
     runtime: &'a Runtime,
@@ -46,5 +47,13 @@ impl<'a> Device<'a> {
         }
         .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
         .map_err(Error::from)
+    }
+
+    pub(crate) fn get_session_manager(
+        &self,
+    ) -> Result<InterfaceWrapper<'a, SessionManager<'a>>, Error> {
+        unsafe { self.unsafe_interface.Activate(CLSCTX_ALL, None) }
+            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+            .map_err(Error::from)
     }
 }

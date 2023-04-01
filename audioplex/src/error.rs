@@ -1,10 +1,13 @@
 use crate::audio::property_type::PropertyType;
 use std::string::FromUtf16Error;
 use thiserror::Error;
-use windows::Win32::{
-    Media::Audio::{EDataFlow, ERole},
-    System::Com::{COINIT, STGM},
-    UI::Shell::PropertiesSystem::PROPERTYKEY,
+use windows::{
+    core::HRESULT,
+    Win32::{
+        Media::Audio::{AudioSessionState, EDataFlow, ERole},
+        System::Com::{COINIT, STGM},
+        UI::Shell::PropertiesSystem::PROPERTYKEY,
+    },
 };
 
 #[derive(Error, Debug)]
@@ -30,4 +33,8 @@ pub(crate) enum Error {
         expected_type: PropertyType,
         found_type: PropertyType,
     },
+    #[error("Unknown session state {session_state:?}")]
+    UnknownSessionState { session_state: AudioSessionState },
+    #[error("Unexpected HResult {hresult}")]
+    UnexpectedHResult { hresult: HRESULT },
 }
