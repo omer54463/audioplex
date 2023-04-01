@@ -1,6 +1,6 @@
-# Research
+# Device Switch
 
-Programmatically setting a an audio session's output device is not a documented feature.
+Programmatically setting a an audio session's input/output device is not a documented feature.
 However, the audio mixer in the settings menu can obviously do just that.
 I want to do that, too.
 
