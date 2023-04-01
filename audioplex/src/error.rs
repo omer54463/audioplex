@@ -1,4 +1,4 @@
-use crate::audio::property_type::PropertyType;
+use crate::audio::property::property_type::PropertyType;
 use std::string::FromUtf16Error;
 use thiserror::Error;
 use windows::{

@@ -1,8 +1,8 @@
-use crate::audio::device_state::DeviceState;
-use crate::audio::session_manager::SessionManager;
+use crate::audio::device::device_state::DeviceState;
+use crate::audio::session::session_manager::SessionManager;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
 use crate::{
-    audio::{property_store::PropertyStore, property_store_access::PropertyStoreAccess},
+    audio::property::{property_store::PropertyStore, property_store_access::PropertyStoreAccess},
     error::Error,
 };
 use windows::Win32::Media::Audio::IMMDevice;

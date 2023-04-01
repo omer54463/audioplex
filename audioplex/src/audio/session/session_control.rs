@@ -1,4 +1,6 @@
-use crate::audio::{session_extended_control::SessionExtendedControl, session_state::SessionState};
+use crate::audio::session::{
+    session_extended_control::SessionExtendedControl, session_state::SessionState,
+};
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
     error::Error,

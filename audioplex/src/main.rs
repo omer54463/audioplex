@@ -6,12 +6,12 @@ mod audio;
 mod com;
 mod error;
 
-use crate::audio::property_key::PropertyKey;
-use crate::audio::property_store_access::PropertyStoreAccess;
+use crate::audio::property::property_key::PropertyKey;
+use crate::audio::property::property_store_access::PropertyStoreAccess;
 use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
 use audio::data_flow::DataFlow;
-use audio::device_enumerator::DeviceEnumerator;
-use audio::device_state::DeviceState;
+use audio::device::device_enumerator::DeviceEnumerator;
+use audio::device::device_state::DeviceState;
 use error::Error;
 
 fn main() -> Result<(), Error> {

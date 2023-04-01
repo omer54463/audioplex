@@ -1,5 +1,8 @@
 use crate::com::{interface::Interface, runtime::Runtime};
-use crate::{audio::property_key::PropertyKey, audio::property_type::PropertyType, error::Error};
+use crate::{
+    audio::property::property_key::PropertyKey, audio::property::property_type::PropertyType,
+    error::Error,
+};
 use windows::Win32::{
     System::Com::StructuredStorage::PROPVARIANT, UI::Shell::PropertiesSystem::IPropertyStore,
 };

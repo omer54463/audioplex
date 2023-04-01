@@ -1,4 +1,4 @@
-use crate::audio::session_enumerator::SessionEnumerator;
+use crate::audio::session::session_enumerator::SessionEnumerator;
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
     error::Error,
