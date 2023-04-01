@@ -5,6 +5,7 @@ use windows::Win32::Media::Audio::{
 
 use crate::error::Error;
 
+#[derive(Debug, PartialEq, Eq)]
 pub(crate) enum DeviceState {
     All,
     Active,
@@ -19,10 +20,10 @@ impl TryFrom<u32> for DeviceState {
     fn try_from(device_state: u32) -> Result<Self, Self::Error> {
         match device_state {
             DEVICE_STATEMASK_ALL => Ok(Self::All),
-            DEVICE_STATE_ACTIVE => Ok(Self::All),
-            DEVICE_STATE_DISABLED => Ok(Self::All),
-            DEVICE_STATE_NOTPRESENT => Ok(Self::All),
-            DEVICE_STATE_UNPLUGGED => Ok(Self::All),
+            DEVICE_STATE_ACTIVE => Ok(Self::Active),
+            DEVICE_STATE_DISABLED => Ok(Self::Disabled),
+            DEVICE_STATE_NOTPRESENT => Ok(Self::NotPresent),
+            DEVICE_STATE_UNPLUGGED => Ok(Self::Unplugged),
             _ => Err(Error::UnknownDeviceState { device_state }),
         }
     }

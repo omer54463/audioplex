@@ -5,6 +5,8 @@ use crate::{
 };
 use windows::Win32::Media::Audio::IMMDevice;
 
+use super::device_state::DeviceState;
+
 pub(crate) struct Device<'a> {
     runtime: &'a Runtime,
     unsafe_interface: IMMDevice,
@@ -26,6 +28,12 @@ impl<'a> Device<'a> {
         unsafe { self.unsafe_interface.GetId() }
             .map_err(Error::from)
             .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
+    }
+
+    pub(crate) fn get_state(&self) -> Result<DeviceState, Error> {
+        unsafe { self.unsafe_interface.GetState() }
+            .map_err(Error::from)
+            .and_then(|state| state.try_into())
     }
 
     pub(crate) fn get_property_store(

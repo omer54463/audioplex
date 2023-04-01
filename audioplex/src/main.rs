@@ -18,7 +18,7 @@ fn main() -> Result<(), Error> {
     let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
     let device_collection =
-        device_enumerator.get_device_collection(DataFlow::All, DeviceState::Active)?;
+        device_enumerator.get_device_collection(DataFlow::All, DeviceState::All)?;
 
     for device_index in 0..device_collection.get_count()? {
         println!("---------------------------------------------------------------------------");
@@ -28,19 +28,24 @@ fn main() -> Result<(), Error> {
         let device_id = device.get_id()?;
         println!("Device ID: {}", device_id);
 
-        let property_store = device.get_property_store(PropertyStoreAccess::Read)?;
+        let device_state = device.get_state()?;
+        println!("Device State: {:?}", device_state);
 
-        let device_name = property_store.get_string(PropertyKey::DeviceName)?;
-        println!("Device Name: {}", device_name);
+        if device_state != DeviceState::NotPresent {
+            let property_store = device.get_property_store(PropertyStoreAccess::Read)?;
 
-        let enumerator_name = property_store.get_string(PropertyKey::EnumeratorName)?;
-        println!("Enumerator Name: {}", enumerator_name);
+            let device_name = property_store.get_string(PropertyKey::DeviceName)?;
+            println!("Device Name: {}", device_name);
 
-        let interface_name = property_store.get_string(PropertyKey::InterfaceName)?;
-        println!("Interface Name: {}", interface_name);
+            let enumerator_name = property_store.get_string(PropertyKey::EnumeratorName)?;
+            println!("Enumerator Name: {}", enumerator_name);
 
-        let device_description = property_store.get_string(PropertyKey::DeviceDescription)?;
-        println!("Device Description: {}", device_description);
+            let interface_name = property_store.get_string(PropertyKey::InterfaceName)?;
+            println!("Interface Name: {}", interface_name);
+
+            let device_description = property_store.get_string(PropertyKey::DeviceDescription)?;
+            println!("Device Description: {}", device_description);
+        }
     }
 
     println!("---------------------------------------------------------------------------");
