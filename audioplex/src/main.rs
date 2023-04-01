@@ -6,13 +6,13 @@ mod audio;
 mod com;
 mod error;
 
+use crate::audio::data_flow::DataFlow;
+use crate::audio::device::device_enumerator::DeviceEnumerator;
+use crate::audio::device::device_state::DeviceState;
 use crate::audio::property::property_key::PropertyKey;
 use crate::audio::property::property_store_access::PropertyStoreAccess;
 use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
-use audio::data_flow::DataFlow;
-use audio::device::device_enumerator::DeviceEnumerator;
-use audio::device::device_state::DeviceState;
-use error::Error;
+use crate::error::Error;
 
 fn main() -> Result<(), Error> {
     let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;
