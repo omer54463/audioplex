@@ -1,5 +1,5 @@
-use crate::audio::device::device_notification_callback::DeviceNotificationCallback;
-use crate::audio::property::property_key::PropertyKey;
+use crate::audio::devices::device_notification_callback::DeviceNotificationCallback;
+use crate::audio::properties::property_key::PropertyKey;
 use crate::error::Error;
 use windows::core::{implement, PCWSTR};
 use windows::Win32::Media::Audio::{
@@ -42,9 +42,15 @@ impl DeviceNotificationClient {
         property_key: &PROPERTYKEY,
     ) -> Result<(), Error> {
         let device_id = unsafe { device_id.to_string() }?;
-        match property_key.clone().try_into() {
-            Ok(PropertyKey::DeviceName) => Ok(self.callback.on_name_change(device_id)),
-            Ok(PropertyKey::IconPath) => Ok(self.callback.on_icon_change(device_id)),
+        match (*property_key).try_into() {
+            Ok(PropertyKey::DeviceName) => {
+                self.callback.on_name_change(device_id);
+                Ok(())
+            }
+            Ok(PropertyKey::IconPath) => {
+                self.callback.on_icon_change(device_id);
+                Ok(())
+            }
             Ok(_) => Ok(()),
             Err(error) => Err(error),
         }

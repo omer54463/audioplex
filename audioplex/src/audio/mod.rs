@@ -1,5 +1,5 @@
 pub(crate) mod data_flow;
-pub(crate) mod device;
-pub(crate) mod property;
+pub(crate) mod devices;
+pub(crate) mod properties;
 pub(crate) mod role;
-pub(crate) mod session;
+pub(crate) mod sessions;

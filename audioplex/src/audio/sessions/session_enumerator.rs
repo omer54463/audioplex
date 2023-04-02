@@ -1,4 +1,4 @@
-use crate::audio::session::session_control::SessionControl;
+use crate::audio::sessions::session_control::SessionControl;
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
     error::Error,
@@ -24,7 +24,6 @@ impl<'a> Interface<'a> for SessionEnumerator<'a> {
 impl<'a> SessionEnumerator<'a> {
     pub(crate) fn get_count(&self) -> Result<i32, Error> {
         unsafe { self.unsafe_interface.GetCount() }
-            .map(|count| count)
             .map_err(Error::from)
     }
 

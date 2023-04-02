@@ -7,10 +7,10 @@ mod com;
 mod error;
 
 use crate::audio::data_flow::DataFlow;
-use crate::audio::device::device_enumerator::DeviceEnumerator;
-use crate::audio::device::device_state::DeviceState;
-use crate::audio::property::property_key::PropertyKey;
-use crate::audio::property::property_store_access::PropertyStoreAccess;
+use crate::audio::devices::device_enumerator::DeviceEnumerator;
+use crate::audio::devices::device_state::DeviceState;
+use crate::audio::properties::property_key::PropertyKey;
+use crate::audio::properties::property_store_access::PropertyStoreAccess;
 use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
 use crate::error::Error;
 

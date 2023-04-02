@@ -1,4 +1,4 @@
-use crate::audio::property::property_type::PropertyType;
+use crate::audio::properties::property_type::PropertyType;
 use std::string::FromUtf16Error;
 use thiserror::Error;
 use windows::{
@@ -14,9 +14,9 @@ use windows::{
 #[derive(Error, Debug)]
 pub(crate) enum Error {
     #[error("Windows error")]
-    WindowsError(#[from] ::windows::core::Error),
+    Windows(#[from] ::windows::core::Error),
     #[error("FromUtf16Error error")]
-    FromUtf16Error(#[from] FromUtf16Error),
+    FromUtf16(#[from] FromUtf16Error),
     #[error("Unknown data flow {data_flow:?}")]
     UnknownDataFlow { data_flow: EDataFlow },
     #[error("Unknown device state {device_state:?}")]

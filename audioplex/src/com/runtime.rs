@@ -11,23 +11,23 @@ impl Runtime {
     pub(crate) fn new(runtime_mode: RuntimeMode) -> Result<Self, Error> {
         unsafe { CoInitializeEx(None, runtime_mode.into()) }
             .map(|_| Runtime {})
-            .map_err(|error| Error::WindowsError(error))
+            .map_err(Error::Windows)
     }
 
     pub(crate) fn create_instance<'a, I: CreatableInterface<'a>>(
         &'a self,
     ) -> Result<InterfaceWrapper<I>, Error> {
         unsafe { CoCreateInstance(&I::get_guid(), None, CLSCTX_ALL) }
-            .map(|unsafe_interface| I::new(&self, unsafe_interface))
+            .map(|unsafe_interface| I::new(self, unsafe_interface))
             .map(|interface| InterfaceWrapper::new(interface))
-            .map_err(|error| Error::WindowsError(error))
+            .map_err(Error::Windows)
     }
 
     pub(crate) fn wrap_instance<'a, I: Interface<'a>>(
         &'a self,
         unsafe_interface: I::UnsafeInterface,
     ) -> InterfaceWrapper<I> {
-        InterfaceWrapper::new(I::new(&self, unsafe_interface))
+        InterfaceWrapper::new(I::new(self, unsafe_interface))
     }
 }
 

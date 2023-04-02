@@ -1,4 +1,4 @@
-use crate::audio::session::{
+use crate::audio::sessions::{
     session_extended_control::SessionExtendedControl, session_state::SessionState,
 };
 use crate::{

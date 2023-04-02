@@ -1,4 +1,4 @@
-use crate::audio::property::property_type::PropertyType;
+use crate::audio::properties::property_type::PropertyType;
 use crate::error::Error;
 use windows::Win32::{
     Devices::{
@@ -60,8 +60,8 @@ impl From<PropertyKey> for PROPERTYKEY {
 }
 
 fn to_property_key(device_property_key: DEVPROPKEY) -> PROPERTYKEY {
-    return PROPERTYKEY {
+    PROPERTYKEY {
         fmtid: device_property_key.fmtid,
         pid: device_property_key.pid,
-    };
+    }
 }
