@@ -19,7 +19,7 @@ These are the events I would like to receive a callback for.
 - Session icon change.
 - Session volume change.
 
-## Provided Callback Interfaces
+## Callback Interfaces Overview
 
 | Interface | Method | Callback Interface | Notifications |
 | - | - | - | - |
@@ -33,7 +33,7 @@ These are the events I would like to receive a callback for.
 | `IMMDeviceEnumerator` | `RegisterEndpointNotificationCallback` | `IMMNotificationClient` | Device addition/removal/state change/name change/icon change. |
 | `IPart` | `RegisterControlChangeCallback` | `IControlChangeNotify` | Connector or subunit changes. |
 
-## Relevant APIs
+## Relevant Callback Interfaces
 
 - `IAudioSessionControl2::RegisterAudioSessionNotification`
 - `IAudioSessionControl2::RegisterSessionNotification`
