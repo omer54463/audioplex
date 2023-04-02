@@ -17,10 +17,9 @@ impl DeviceNotificationClient {
         Self { callback }
     }
 
-    fn on_device_state_changed(&self, device_id: &PCWSTR, device_state: u32) -> Result<(), Error> {
+    fn on_device_state_changed(&self, device_id: &PCWSTR) -> Result<(), Error> {
         let device_id = unsafe { device_id.to_string() }?;
-        let device_state = device_state.try_into()?;
-        self.callback.on_state_change(device_id, device_state);
+        self.callback.on_state_change(device_id);
         Ok(())
     }
 
@@ -51,6 +50,10 @@ impl DeviceNotificationClient {
                 self.callback.on_icon_change(device_id);
                 Ok(())
             }
+            Ok(PropertyKey::DeviceDescription) => {
+                self.callback.on_description_change(device_id);
+                Ok(())
+            }
             Ok(_) => Ok(()),
             Err(error) => Err(error),
         }
@@ -61,9 +64,9 @@ impl IMMNotificationClient_Impl for DeviceNotificationClient {
     fn OnDeviceStateChanged(
         &self,
         device_id: &PCWSTR,
-        device_state: u32,
+        _device_state: u32,
     ) -> windows::core::Result<()> {
-        self.on_device_state_changed(device_id, device_state)
+        self.on_device_state_changed(device_id)
             .map_err(|error| error.into())
     }
 
