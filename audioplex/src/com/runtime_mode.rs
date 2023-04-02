@@ -18,11 +18,11 @@ impl TryFrom<COINIT> for RuntimeMode {
     }
 }
 
-impl Into<COINIT> for RuntimeMode {
-    fn into(self) -> COINIT {
-        match self {
-            Self::SingleThreaded => COINIT_APARTMENTTHREADED,
-            Self::MultiThreaded => COINIT_MULTITHREADED,
+impl From<RuntimeMode> for COINIT {
+    fn from(val: RuntimeMode) -> Self {
+        match val {
+            RuntimeMode::SingleThreaded => COINIT_APARTMENTTHREADED,
+            RuntimeMode::MultiThreaded => COINIT_MULTITHREADED,
         }
     }
 }

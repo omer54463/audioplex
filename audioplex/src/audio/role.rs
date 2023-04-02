@@ -20,12 +20,12 @@ impl TryFrom<ERole> for Role {
     }
 }
 
-impl Into<ERole> for Role {
-    fn into(self) -> ERole {
-        match self {
-            Self::Console => eConsole,
-            Self::Communications => eCommunications,
-            Self::Multimedia => eMultimedia,
+impl From<Role> for ERole {
+    fn from(val: Role) -> Self {
+        match val {
+            Role::Console => eConsole,
+            Role::Communications => eCommunications,
+            Role::Multimedia => eMultimedia,
         }
     }
 }

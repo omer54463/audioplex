@@ -56,27 +56,27 @@ impl TryFrom<STGM> for PropertyStoreAccess {
     }
 }
 
-impl Into<STGM> for PropertyStoreAccess {
-    fn into(self) -> STGM {
-        match self {
-            Self::Direct => STGM_DIRECT,
-            Self::Transacted => STGM_TRANSACTED,
-            Self::Simple => STGM_SIMPLE,
-            Self::Read => STGM_READ,
-            Self::Write => STGM_WRITE,
-            Self::ReadWrite => STGM_READWRITE,
-            Self::ShareDenyNone => STGM_SHARE_DENY_NONE,
-            Self::ShareDenyRead => STGM_SHARE_DENY_READ,
-            Self::ShareDenyWrite => STGM_SHARE_DENY_WRITE,
-            Self::ShareExclusive => STGM_SHARE_EXCLUSIVE,
-            Self::Priority => STGM_PRIORITY,
-            Self::DeleteOnRelease => STGM_DELETEONRELEASE,
-            Self::NoScratch => STGM_NOSCRATCH,
-            Self::Create => STGM_CREATE,
-            Self::Convert => STGM_CONVERT,
-            Self::FailIfThere => STGM_FAILIFTHERE,
-            Self::NoSnapshot => STGM_NOSNAPSHOT,
-            Self::DirectSwmr => STGM_DIRECT_SWMR,
+impl From<PropertyStoreAccess> for STGM {
+    fn from(val: PropertyStoreAccess) -> Self {
+        match val {
+            PropertyStoreAccess::Direct => STGM_DIRECT,
+            PropertyStoreAccess::Transacted => STGM_TRANSACTED,
+            PropertyStoreAccess::Simple => STGM_SIMPLE,
+            PropertyStoreAccess::Read => STGM_READ,
+            PropertyStoreAccess::Write => STGM_WRITE,
+            PropertyStoreAccess::ReadWrite => STGM_READWRITE,
+            PropertyStoreAccess::ShareDenyNone => STGM_SHARE_DENY_NONE,
+            PropertyStoreAccess::ShareDenyRead => STGM_SHARE_DENY_READ,
+            PropertyStoreAccess::ShareDenyWrite => STGM_SHARE_DENY_WRITE,
+            PropertyStoreAccess::ShareExclusive => STGM_SHARE_EXCLUSIVE,
+            PropertyStoreAccess::Priority => STGM_PRIORITY,
+            PropertyStoreAccess::DeleteOnRelease => STGM_DELETEONRELEASE,
+            PropertyStoreAccess::NoScratch => STGM_NOSCRATCH,
+            PropertyStoreAccess::Create => STGM_CREATE,
+            PropertyStoreAccess::Convert => STGM_CONVERT,
+            PropertyStoreAccess::FailIfThere => STGM_FAILIFTHERE,
+            PropertyStoreAccess::NoSnapshot => STGM_NOSNAPSHOT,
+            PropertyStoreAccess::DirectSwmr => STGM_DIRECT_SWMR,
         }
     }
 }

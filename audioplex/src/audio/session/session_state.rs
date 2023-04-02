@@ -23,12 +23,12 @@ impl TryFrom<AudioSessionState> for SessionState {
     }
 }
 
-impl Into<AudioSessionState> for SessionState {
-    fn into(self) -> AudioSessionState {
-        match self {
-            Self::Inactive => AudioSessionStateInactive,
-            Self::Active => AudioSessionStateActive,
-            Self::Expired => AudioSessionStateExpired,
+impl From<SessionState> for AudioSessionState {
+    fn from(val: SessionState) -> Self {
+        match val {
+            SessionState::Inactive => AudioSessionStateInactive,
+            SessionState::Active => AudioSessionStateActive,
+            SessionState::Expired => AudioSessionStateExpired,
         }
     }
 }

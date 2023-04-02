@@ -29,14 +29,14 @@ impl TryFrom<u32> for DeviceState {
     }
 }
 
-impl Into<u32> for DeviceState {
-    fn into(self) -> u32 {
-        match self {
-            Self::All => DEVICE_STATEMASK_ALL,
-            Self::Active => DEVICE_STATE_ACTIVE,
-            Self::Disabled => DEVICE_STATE_DISABLED,
-            Self::NotPresent => DEVICE_STATE_NOTPRESENT,
-            Self::Unplugged => DEVICE_STATE_UNPLUGGED,
+impl From<DeviceState> for u32 {
+    fn from(value: DeviceState) -> Self {
+        match value {
+            DeviceState::All => DEVICE_STATEMASK_ALL,
+            DeviceState::Active => DEVICE_STATE_ACTIVE,
+            DeviceState::Disabled => DEVICE_STATE_DISABLED,
+            DeviceState::NotPresent => DEVICE_STATE_NOTPRESENT,
+            DeviceState::Unplugged => DEVICE_STATE_UNPLUGGED,
         }
     }
 }

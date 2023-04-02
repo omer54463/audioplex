@@ -47,14 +47,14 @@ impl TryFrom<PROPERTYKEY> for PropertyKey {
     }
 }
 
-impl Into<PROPERTYKEY> for PropertyKey {
-    fn into(self) -> PROPERTYKEY {
-        match self {
-            Self::DeviceName => PKEY_Device_FriendlyName,
-            Self::IconPath => to_property_key(DEVPKEY_DeviceClass_IconPath),
-            Self::EnumeratorName => to_property_key(DEVPKEY_Device_EnumeratorName),
-            Self::InterfaceName => to_property_key(DEVPKEY_DeviceInterface_FriendlyName),
-            Self::DeviceDescription => to_property_key(DEVPKEY_Device_DeviceDesc),
+impl From<PropertyKey> for PROPERTYKEY {
+    fn from(val: PropertyKey) -> Self {
+        match val {
+            PropertyKey::DeviceName => PKEY_Device_FriendlyName,
+            PropertyKey::IconPath => to_property_key(DEVPKEY_DeviceClass_IconPath),
+            PropertyKey::EnumeratorName => to_property_key(DEVPKEY_Device_EnumeratorName),
+            PropertyKey::InterfaceName => to_property_key(DEVPKEY_DeviceInterface_FriendlyName),
+            PropertyKey::DeviceDescription => to_property_key(DEVPKEY_Device_DeviceDesc),
         }
     }
 }

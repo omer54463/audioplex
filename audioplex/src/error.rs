@@ -4,6 +4,7 @@ use thiserror::Error;
 use windows::{
     core::HRESULT,
     Win32::{
+        Foundation::E_UNEXPECTED,
         Media::Audio::{AudioSessionState, EDataFlow, ERole},
         System::Com::{COINIT, STGM},
         UI::Shell::PropertiesSystem::PROPERTYKEY,
@@ -37,4 +38,10 @@ pub(crate) enum Error {
     UnknownSessionState { session_state: AudioSessionState },
     #[error("Unexpected HResult {hresult}")]
     UnexpectedHResult { hresult: HRESULT },
+}
+
+impl From<Error> for windows::core::Error {
+    fn from(value: Error) -> Self {
+        Self::new(E_UNEXPECTED, value.to_string().into())
+    }
 }

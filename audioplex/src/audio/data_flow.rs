@@ -20,12 +20,12 @@ impl TryFrom<EDataFlow> for DataFlow {
     }
 }
 
-impl Into<EDataFlow> for DataFlow {
-    fn into(self) -> EDataFlow {
-        match self {
-            Self::Render => eRender,
-            Self::Capture => eCapture,
-            Self::All => eAll,
+impl From<DataFlow> for EDataFlow {
+    fn from(val: DataFlow) -> Self {
+        match val {
+            DataFlow::Render => eRender,
+            DataFlow::Capture => eCapture,
+            DataFlow::All => eAll,
         }
     }
 }
