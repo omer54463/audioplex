@@ -1,5 +1,4 @@
 use crate::audio::devices::device::Device;
-use crate::audio::role::Role;
 use crate::com::creatable_interface::CreatableInterface;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
 use crate::{
@@ -40,19 +39,6 @@ impl<'a> DeviceEnumerator<'a> {
         unsafe {
             self.unsafe_interface
                 .EnumAudioEndpoints(data_flow.into(), device_state.into())
-        }
-        .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
-        .map_err(Error::from)
-    }
-
-    pub(crate) fn get_default_device(
-        &self,
-        data_flow: DataFlow,
-        role: Role,
-    ) -> Result<InterfaceWrapper<Device>, Error> {
-        unsafe {
-            self.unsafe_interface
-                .GetDefaultAudioEndpoint(data_flow.into(), role.into())
         }
         .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
         .map_err(Error::from)

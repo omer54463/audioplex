@@ -1,5 +1,4 @@
 #![feature(if_let_guard)]
-#![allow(dead_code)]
 #![allow(non_upper_case_globals)]
 
 mod audio;
