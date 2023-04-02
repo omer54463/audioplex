@@ -36,5 +36,5 @@ These are the events I would like to receive a callback for.
 ## Relevant Callback Interfaces
 
 - `IAudioSessionControl2::RegisterAudioSessionNotification`
-- `IAudioSessionControl2::RegisterSessionNotification`
+- `IAudioSessionManager2::RegisterSessionNotification`
 - `IMMDeviceEnumerator::RegisterEndpointNotificationCallback`
