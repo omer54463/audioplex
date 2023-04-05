@@ -16,10 +16,7 @@ impl Runtime {
 
     pub(crate) fn create_instance<'a, CI: CreatableInterface<'a>>(
         &'a self,
-    ) -> Result<InterfaceWrapper<CI>, Error>
-    where
-        CI::RawInterface: ::windows::core::Interface,
-    {
+    ) -> Result<InterfaceWrapper<CI>, Error> {
         unsafe { CoCreateInstance(&CI::get_guid(), None, CLSCTX_ALL) }
             .map(|raw_interface| CI::new(self, raw_interface))
             .map(|interface| InterfaceWrapper::new(interface))
