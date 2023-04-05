@@ -14,11 +14,14 @@ impl Runtime {
             .map_err(Error::Windows)
     }
 
-    pub(crate) fn create_instance<'a, I: CreatableInterface<'a>>(
+    pub(crate) fn create_instance<'a, CI: CreatableInterface<'a>>(
         &'a self,
-    ) -> Result<InterfaceWrapper<I>, Error> {
-        unsafe { CoCreateInstance(&I::get_guid(), None, CLSCTX_ALL) }
-            .map(|raw_interface| I::new(self, raw_interface))
+    ) -> Result<InterfaceWrapper<CI>, Error>
+    where
+        CI::RawInterface: ::windows::core::Interface,
+    {
+        unsafe { CoCreateInstance(&CI::get_guid(), None, CLSCTX_ALL) }
+            .map(|raw_interface| CI::new(self, raw_interface))
             .map(|interface| InterfaceWrapper::new(interface))
             .map_err(Error::Windows)
     }
