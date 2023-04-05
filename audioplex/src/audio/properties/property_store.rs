@@ -8,14 +8,14 @@ use windows::Win32::{
 };
 
 pub(crate) struct PropertyStore {
-    unsafe_interface: IPropertyStore,
+    raw_interface: IPropertyStore,
 }
 
 impl<'a> Interface<'a> for PropertyStore {
-    type UnsafeInterface = IPropertyStore;
+    type RawInterface = IPropertyStore;
 
-    fn new(_: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
-        Self { unsafe_interface }
+    fn new(_: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
+        Self { raw_interface }
     }
 }
 
@@ -35,7 +35,7 @@ impl PropertyStore {
     }
 
     unsafe fn get_property_variant(&self, property_key: PropertyKey) -> Result<PROPVARIANT, Error> {
-        self.unsafe_interface
+        self.raw_interface
             .GetValue(&property_key.into())
             .map_err(Error::from)
     }

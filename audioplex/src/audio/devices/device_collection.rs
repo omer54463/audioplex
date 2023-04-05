@@ -4,28 +4,28 @@ use windows::Win32::Media::Audio::IMMDeviceCollection;
 
 pub(crate) struct DeviceCollection<'a> {
     runtime: &'a Runtime,
-    unsafe_interface: IMMDeviceCollection,
+    raw_interface: IMMDeviceCollection,
 }
 
 impl<'a> Interface<'a> for DeviceCollection<'a> {
-    type UnsafeInterface = IMMDeviceCollection;
+    type RawInterface = IMMDeviceCollection;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self {
             runtime,
-            unsafe_interface,
+            raw_interface,
         }
     }
 }
 
 impl<'a> DeviceCollection<'a> {
     pub(crate) fn get_count(&self) -> Result<u32, Error> {
-        unsafe { self.unsafe_interface.GetCount() }.map_err(Error::from)
+        unsafe { self.raw_interface.GetCount() }.map_err(Error::from)
     }
 
     pub(crate) fn get_device(&self, index: u32) -> Result<InterfaceWrapper<Device>, Error> {
-        unsafe { self.unsafe_interface.Item(index) }
-            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+        unsafe { self.raw_interface.Item(index) }
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 }

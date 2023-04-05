@@ -18,16 +18,16 @@ impl Runtime {
         &'a self,
     ) -> Result<InterfaceWrapper<I>, Error> {
         unsafe { CoCreateInstance(&I::get_guid(), None, CLSCTX_ALL) }
-            .map(|unsafe_interface| I::new(self, unsafe_interface))
+            .map(|raw_interface| I::new(self, raw_interface))
             .map(|interface| InterfaceWrapper::new(interface))
             .map_err(Error::Windows)
     }
 
     pub(crate) fn wrap_instance<'a, I: Interface<'a>>(
         &'a self,
-        unsafe_interface: I::UnsafeInterface,
+        raw_interface: I::RawInterface,
     ) -> InterfaceWrapper<I> {
-        InterfaceWrapper::new(I::new(self, unsafe_interface))
+        InterfaceWrapper::new(I::new(self, raw_interface))
     }
 }
 

@@ -7,32 +7,31 @@ use windows::Win32::Media::Audio::IAudioSessionEnumerator;
 
 pub(crate) struct SessionEnumerator<'a> {
     runtime: &'a Runtime,
-    unsafe_interface: IAudioSessionEnumerator,
+    raw_interface: IAudioSessionEnumerator,
 }
 
 impl<'a> Interface<'a> for SessionEnumerator<'a> {
-    type UnsafeInterface = IAudioSessionEnumerator;
+    type RawInterface = IAudioSessionEnumerator;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self {
             runtime,
-            unsafe_interface,
+            raw_interface,
         }
     }
 }
 
 impl<'a> SessionEnumerator<'a> {
     pub(crate) fn get_count(&self) -> Result<i32, Error> {
-        unsafe { self.unsafe_interface.GetCount() }
-            .map_err(Error::from)
+        unsafe { self.raw_interface.GetCount() }.map_err(Error::from)
     }
 
     pub(crate) fn get_session_control(
         &self,
         index: i32,
     ) -> Result<InterfaceWrapper<SessionControl>, Error> {
-        unsafe { self.unsafe_interface.GetSession(index) }
-            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+        unsafe { self.raw_interface.GetSession(index) }
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 }

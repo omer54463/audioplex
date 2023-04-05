@@ -1,7 +1,7 @@
 use crate::com::runtime::Runtime;
 
 pub(crate) trait Interface<'a> {
-    type UnsafeInterface: ::windows::core::Interface;
+    type RawInterface: ::windows::core::Interface;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self;
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self;
 }

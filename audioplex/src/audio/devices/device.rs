@@ -12,29 +12,29 @@ use windows::Win32::System::Com::CLSCTX_ALL;
 
 pub(crate) struct Device<'a> {
     runtime: &'a Runtime,
-    unsafe_interface: IMMDevice,
+    raw_interface: IMMDevice,
 }
 
 impl<'a> Interface<'a> for Device<'a> {
-    type UnsafeInterface = IMMDevice;
+    type RawInterface = IMMDevice;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self {
             runtime,
-            unsafe_interface,
+            raw_interface,
         }
     }
 }
 
 impl<'a> Device<'a> {
     pub(crate) fn get_id(&self) -> Result<String, Error> {
-        unsafe { self.unsafe_interface.GetId() }
+        unsafe { self.raw_interface.GetId() }
             .map_err(Error::from)
             .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
     }
 
     pub(crate) fn get_state(&self) -> Result<DeviceState, Error> {
-        unsafe { self.unsafe_interface.GetState() }
+        unsafe { self.raw_interface.GetState() }
             .map_err(Error::from)
             .and_then(|state| state.try_into())
     }
@@ -43,19 +43,16 @@ impl<'a> Device<'a> {
         &self,
         property_access: PropertyStoreAccess,
     ) -> Result<InterfaceWrapper<PropertyStore>, Error> {
-        unsafe {
-            self.unsafe_interface
-                .OpenPropertyStore(property_access.into())
-        }
-        .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
-        .map_err(Error::from)
+        unsafe { self.raw_interface.OpenPropertyStore(property_access.into()) }
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map_err(Error::from)
     }
 
     pub(crate) fn get_session_manager(
         &self,
     ) -> Result<InterfaceWrapper<'a, SessionManager<'a>>, Error> {
-        unsafe { self.unsafe_interface.Activate(CLSCTX_ALL, None) }
-            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+        unsafe { self.raw_interface.Activate(CLSCTX_ALL, None) }
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 }

@@ -9,35 +9,35 @@ use windows::{core::Interface as _, Win32::Media::Audio::IAudioSessionControl};
 
 pub(crate) struct SessionControl<'a> {
     runtime: &'a Runtime,
-    unsafe_interface: IAudioSessionControl,
+    raw_interface: IAudioSessionControl,
 }
 
 impl<'a> Interface<'a> for SessionControl<'a> {
-    type UnsafeInterface = IAudioSessionControl;
+    type RawInterface = IAudioSessionControl;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self {
             runtime,
-            unsafe_interface,
+            raw_interface,
         }
     }
 }
 
 impl<'a> SessionControl<'a> {
     pub(crate) fn get_display_name(&self) -> Result<String, Error> {
-        unsafe { self.unsafe_interface.GetDisplayName() }
+        unsafe { self.raw_interface.GetDisplayName() }
             .map_err(Error::from)
             .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
     }
 
     pub(crate) fn get_icon_path(&self) -> Result<String, Error> {
-        unsafe { self.unsafe_interface.GetIconPath() }
+        unsafe { self.raw_interface.GetIconPath() }
             .map_err(Error::from)
             .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
     }
 
     pub(crate) fn get_state(&self) -> Result<SessionState, Error> {
-        unsafe { self.unsafe_interface.GetState() }
+        unsafe { self.raw_interface.GetState() }
             .map_err(Error::from)
             .and_then(|state| state.try_into())
     }
@@ -45,9 +45,9 @@ impl<'a> SessionControl<'a> {
     pub(crate) fn get_extended_control(
         &self,
     ) -> Result<InterfaceWrapper<SessionExtendedControl>, Error> {
-        self.unsafe_interface
+        self.raw_interface
             .cast()
-            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 }

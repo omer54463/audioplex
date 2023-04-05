@@ -7,16 +7,16 @@ use windows::Win32::Media::Audio::IAudioSessionManager2;
 
 pub(crate) struct SessionManager<'a> {
     runtime: &'a Runtime,
-    unsafe_interface: IAudioSessionManager2,
+    raw_interface: IAudioSessionManager2,
 }
 
 impl<'a> Interface<'a> for SessionManager<'a> {
-    type UnsafeInterface = IAudioSessionManager2;
+    type RawInterface = IAudioSessionManager2;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self {
             runtime,
-            unsafe_interface,
+            raw_interface,
         }
     }
 }
@@ -25,8 +25,8 @@ impl<'a> SessionManager<'a> {
     pub(crate) fn get_session_enumerator(
         &self,
     ) -> Result<InterfaceWrapper<'a, SessionEnumerator<'a>>, Error> {
-        unsafe { self.unsafe_interface.GetSessionEnumerator() }
-            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+        unsafe { self.raw_interface.GetSessionEnumerator() }
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 }

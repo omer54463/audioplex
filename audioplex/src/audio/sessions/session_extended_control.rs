@@ -11,26 +11,26 @@ use windows::{
 };
 
 pub(crate) struct SessionExtendedControl {
-    unsafe_interface: IAudioSessionControl2,
+    raw_interface: IAudioSessionControl2,
 }
 
 impl<'a> Interface<'a> for SessionExtendedControl {
-    type UnsafeInterface = IAudioSessionControl2;
+    type RawInterface = IAudioSessionControl2;
 
-    fn new(_: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
-        Self { unsafe_interface }
+    fn new(_: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
+        Self { raw_interface }
     }
 }
 
 impl SessionExtendedControl {
     pub(crate) fn get_process_id(&self) -> Result<u32, Error> {
-        unsafe { self.unsafe_interface.GetProcessId() }.map_err(Error::from)
+        unsafe { self.raw_interface.GetProcessId() }.map_err(Error::from)
     }
 
     pub(crate) fn is_system(&self) -> Result<bool, Error> {
         let hresult = unsafe {
-            (Vtable::vtable(&self.unsafe_interface).IsSystemSoundsSession)(Vtable::as_raw(
-                &self.unsafe_interface,
+            (Vtable::vtable(&self.raw_interface).IsSystemSoundsSession)(Vtable::as_raw(
+                &self.raw_interface,
             ))
         };
 

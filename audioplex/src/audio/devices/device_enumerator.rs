@@ -10,16 +10,16 @@ use windows::Win32::Media::Audio::{IMMDeviceEnumerator, MMDeviceEnumerator};
 
 pub(crate) struct DeviceEnumerator<'a> {
     runtime: &'a Runtime,
-    unsafe_interface: IMMDeviceEnumerator,
+    raw_interface: IMMDeviceEnumerator,
 }
 
 impl<'a> Interface<'a> for DeviceEnumerator<'a> {
-    type UnsafeInterface = IMMDeviceEnumerator;
+    type RawInterface = IMMDeviceEnumerator;
 
-    fn new(runtime: &'a Runtime, unsafe_interface: Self::UnsafeInterface) -> Self {
+    fn new(runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self {
             runtime,
-            unsafe_interface,
+            raw_interface,
         }
     }
 }
@@ -37,17 +37,17 @@ impl<'a> DeviceEnumerator<'a> {
         device_state: DeviceState,
     ) -> Result<InterfaceWrapper<DeviceCollection>, Error> {
         unsafe {
-            self.unsafe_interface
+            self.raw_interface
                 .EnumAudioEndpoints(data_flow.into(), device_state.into())
         }
-        .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+        .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
         .map_err(Error::from)
     }
 
     pub(crate) fn get_device(&self, device_id: String) -> Result<InterfaceWrapper<Device>, Error> {
         let device_id: Vec<_> = device_id.encode_utf16().chain([0]).collect();
-        unsafe { self.unsafe_interface.GetDevice(PCWSTR(device_id.as_ptr())) }
-            .map(|unsafe_interface| self.runtime.wrap_instance(unsafe_interface))
+        unsafe { self.raw_interface.GetDevice(PCWSTR(device_id.as_ptr())) }
+            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 }
