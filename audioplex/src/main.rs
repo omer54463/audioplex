@@ -1,9 +1,11 @@
 #![feature(if_let_guard)]
+#![allow(dead_code)]
 #![allow(non_upper_case_globals)]
 
 mod audio;
 mod com;
 mod error;
+mod event;
 
 use crate::audio::data_flow::DataFlow;
 use crate::audio::devices::device_enumerator::DeviceEnumerator;
@@ -12,11 +14,12 @@ use crate::audio::properties::property_key::PropertyKey;
 use crate::audio::properties::property_store_access::PropertyStoreAccess;
 use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
 use crate::error::Error;
+use std::sync::mpsc::channel;
 
 fn main() -> Result<(), Error> {
     let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;
 
-    let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
+    let mut device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
     let device_collection =
         device_enumerator.get_device_collection(DataFlow::All, DeviceState::All)?;
@@ -83,6 +86,15 @@ fn main() -> Result<(), Error> {
     }
 
     println!("---------------------------------------------------------------------------");
+
+    let (sender, receiver) = channel();
+    device_enumerator.start_events(sender)?;
+
+    for _ in 0..10 {
+        println!("{:?}", receiver.recv().map_err(Error::from)?);
+    }
+
+    device_enumerator.stop_events()?;
 
     Ok(())
 }

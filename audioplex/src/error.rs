@@ -1,5 +1,8 @@
-use crate::audio::properties::property_type::PropertyType;
-use std::string::FromUtf16Error;
+use crate::{audio::properties::property_type::PropertyType, event::Event};
+use std::{
+    string::FromUtf16Error,
+    sync::mpsc::{RecvError, SendError},
+};
 use thiserror::Error;
 use windows::{
     core::HRESULT,
@@ -17,6 +20,10 @@ pub(crate) enum Error {
     Windows(#[from] ::windows::core::Error),
     #[error("FromUtf16Error error")]
     FromUtf16(#[from] FromUtf16Error),
+    #[error("Event send error")]
+    Send(#[from] SendError<Event>),
+    #[error("Event receive error")]
+    Receive(#[from] RecvError),
     #[error("Unknown data flow {data_flow:?}")]
     UnknownDataFlow { data_flow: EDataFlow },
     #[error("Unknown device state {device_state:?}")]
