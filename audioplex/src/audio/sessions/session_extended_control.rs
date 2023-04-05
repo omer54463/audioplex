@@ -17,7 +17,7 @@ pub(crate) struct SessionExtendedControl {
 impl<'a> Interface<'a> for SessionExtendedControl {
     type RawInterface = IAudioSessionControl2;
 
-    fn new(_: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
+    fn new(_runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self { raw_interface }
     }
 }

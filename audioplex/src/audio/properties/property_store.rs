@@ -14,7 +14,7 @@ pub(crate) struct PropertyStore {
 impl<'a> Interface<'a> for PropertyStore {
     type RawInterface = IPropertyStore;
 
-    fn new(_: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
+    fn new(_runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
         Self { raw_interface }
     }
 }
