@@ -1,8 +1,7 @@
-use std::sync::mpsc::Sender;
-
 use crate::audio::devices::device_event::DeviceEvent;
 use crate::audio::properties::property_key::PropertyKey;
 use crate::error::Error;
+use std::sync::mpsc::Sender;
 use windows::core::{implement, PCWSTR};
 use windows::Win32::Media::Audio::{
     EDataFlow, ERole, IMMNotificationClient, IMMNotificationClient_Impl,

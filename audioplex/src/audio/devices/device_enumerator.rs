@@ -1,4 +1,5 @@
 use crate::audio::devices::device::Device;
+use crate::audio::devices::device_event_stream::DeviceEventStream;
 use crate::com::creatable_interface::CreatableInterface;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
 use crate::{
@@ -9,8 +10,6 @@ use windows::core::PCWSTR;
 use windows::Win32::Media::Audio::{
     IMMDeviceEnumerator, IMMNotificationClient, MMDeviceEnumerator,
 };
-
-use super::device_event_stream::DeviceEventStream;
 
 pub(crate) struct DeviceEnumerator<'a> {
     runtime: &'a Runtime,
