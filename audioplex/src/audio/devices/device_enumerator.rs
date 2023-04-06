@@ -1,6 +1,5 @@
-use std::sync::mpsc::Sender;
-
 use crate::audio::devices::device::Device;
+use crate::audio::devices::device_event_client::DeviceEventClient;
 use crate::com::creatable_interface::CreatableInterface;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
 use crate::event::Event;
@@ -8,12 +7,11 @@ use crate::{
     audio::data_flow::DataFlow, audio::devices::device_collection::DeviceCollection,
     audio::devices::device_state::DeviceState, error::Error,
 };
+use std::sync::mpsc::Sender;
 use windows::core::PCWSTR;
 use windows::Win32::Media::Audio::{
     IMMDeviceEnumerator, IMMNotificationClient, MMDeviceEnumerator,
 };
-
-use super::device_event_client::DeviceEventClient;
 
 pub(crate) struct DeviceEnumerator<'a> {
     runtime: &'a Runtime,
