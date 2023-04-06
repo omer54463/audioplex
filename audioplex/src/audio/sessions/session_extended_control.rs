@@ -23,8 +23,10 @@ impl<'a> Interface<'a> for SessionExtendedControl {
 }
 
 impl SessionExtendedControl {
-    pub(crate) fn get_process_id(&self) -> Result<u32, Error> {
-        unsafe { self.raw_interface.GetProcessId() }.map_err(Error::from)
+    pub(crate) fn get_process_id(&self) -> Result<usize, Error> {
+        unsafe { self.raw_interface.GetProcessId() }
+            .map(|process_id| process_id as usize)
+            .map_err(Error::from)
     }
 
     pub(crate) fn is_system(&self) -> Result<bool, Error> {

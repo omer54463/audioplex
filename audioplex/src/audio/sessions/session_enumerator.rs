@@ -22,15 +22,17 @@ impl<'a> Interface<'a> for SessionEnumerator<'a> {
 }
 
 impl<'a> SessionEnumerator<'a> {
-    pub(crate) fn get_count(&self) -> Result<i32, Error> {
-        unsafe { self.raw_interface.GetCount() }.map_err(Error::from)
+    pub(crate) fn get_session_count(&self) -> Result<usize, Error> {
+        unsafe { self.raw_interface.GetCount() }
+            .map(|session_count| session_count as usize)
+            .map_err(Error::from)
     }
 
     pub(crate) fn get_session_control(
         &self,
-        index: i32,
+        index: usize,
     ) -> Result<InterfaceWrapper<SessionControl>, Error> {
-        unsafe { self.raw_interface.GetSession(index) }
+        unsafe { self.raw_interface.GetSession(index as i32) }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }

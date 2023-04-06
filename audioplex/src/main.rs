@@ -22,7 +22,7 @@ fn main() -> Result<(), Error> {
     let device_collection =
         device_enumerator.get_device_collection(DataFlow::All, DeviceState::All)?;
 
-    for device_index in 0..device_collection.get_count()? {
+    for device_index in 0..device_collection.get_device_count()? {
         println!("---------------------------------------------------------------------------");
 
         let device = device_collection.get_device(device_index)?;
@@ -51,7 +51,7 @@ fn main() -> Result<(), Error> {
 
             let session_enumerator = session_manager.get_session_enumerator()?;
 
-            let session_count = session_enumerator.get_count()?;
+            let session_count = session_enumerator.get_session_count()?;
             println!("Session Count: {}", session_count);
 
             for session_index in 0..session_count {
