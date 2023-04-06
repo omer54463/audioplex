@@ -52,7 +52,6 @@ impl DeviceEventClient {
             Ok(PropertyKey::DeviceDescription) => {
                 Ok(Some(DeviceEvent::DescriptionChange { device_id }))
             }
-            Ok(_) => Ok(None),
             Err(error) => Err(error),
         };
 

@@ -3,10 +3,7 @@ use crate::error::Error;
 use windows::Win32::{
     Devices::{
         FunctionDiscovery::PKEY_Device_FriendlyName,
-        Properties::{
-            DEVPKEY_DeviceClass_IconPath, DEVPKEY_DeviceInterface_FriendlyName,
-            DEVPKEY_Device_DeviceDesc, DEVPKEY_Device_EnumeratorName, DEVPROPKEY,
-        },
+        Properties::{DEVPKEY_DeviceClass_IconPath, DEVPKEY_Device_DeviceDesc, DEVPROPKEY},
     },
     UI::Shell::PropertiesSystem::PROPERTYKEY,
 };
@@ -15,8 +12,6 @@ use windows::Win32::{
 pub(crate) enum PropertyKey {
     DeviceName,
     IconPath,
-    EnumeratorName,
-    InterfaceName,
     DeviceDescription,
 }
 
@@ -25,8 +20,6 @@ impl PropertyKey {
         match self {
             Self::DeviceName => PropertyType::String,
             Self::IconPath => PropertyType::String,
-            Self::EnumeratorName => PropertyType::String,
-            Self::InterfaceName => PropertyType::String,
             Self::DeviceDescription => PropertyType::String,
         }
     }
@@ -39,8 +32,6 @@ impl TryFrom<PROPERTYKEY> for PropertyKey {
         match property_key.fmtid {
             fmtid if fmtid == PKEY_Device_FriendlyName.fmtid => Ok(Self::DeviceName),
             fmtid if fmtid == DEVPKEY_DeviceClass_IconPath.fmtid => Ok(Self::IconPath),
-            fmtid if fmtid == DEVPKEY_Device_EnumeratorName.fmtid => Ok(Self::EnumeratorName),
-            fmtid if fmtid == DEVPKEY_DeviceInterface_FriendlyName.fmtid => Ok(Self::InterfaceName),
             fmtid if fmtid == DEVPKEY_Device_DeviceDesc.fmtid => Ok(Self::DeviceDescription),
             _ => Err(Error::UnknownPropertyKey { property_key }),
         }
@@ -52,8 +43,6 @@ impl From<PropertyKey> for PROPERTYKEY {
         match val {
             PropertyKey::DeviceName => PKEY_Device_FriendlyName,
             PropertyKey::IconPath => to_property_key(DEVPKEY_DeviceClass_IconPath),
-            PropertyKey::EnumeratorName => to_property_key(DEVPKEY_Device_EnumeratorName),
-            PropertyKey::InterfaceName => to_property_key(DEVPKEY_DeviceInterface_FriendlyName),
             PropertyKey::DeviceDescription => to_property_key(DEVPKEY_Device_DeviceDesc),
         }
     }

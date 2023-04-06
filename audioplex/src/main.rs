@@ -15,7 +15,7 @@ use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
 use crate::error::Error;
 
 fn main() -> Result<(), Error> {
-    let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;
+    let runtime = Runtime::new(RuntimeMode::SingleThreaded)?;
 
     let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
@@ -41,12 +41,6 @@ fn main() -> Result<(), Error> {
 
             let icon_path = property_store.get_string(PropertyKey::IconPath)?;
             println!("Icon Path: {}", icon_path);
-
-            let enumerator_name = property_store.get_string(PropertyKey::EnumeratorName)?;
-            println!("Enumerator Name: {}", enumerator_name);
-
-            let interface_name = property_store.get_string(PropertyKey::InterfaceName)?;
-            println!("Interface Name: {}", interface_name);
 
             let device_description = property_store.get_string(PropertyKey::DeviceDescription)?;
             println!("Device Description: {}", device_description);
