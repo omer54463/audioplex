@@ -7,12 +7,3 @@ pub(crate) enum DeviceEvent {
     DescriptionChange { device_id: String },
     StateChange { device_id: String },
 }
-
-#[derive(Debug)]
-pub(crate) enum SessionEvent {}
-
-#[derive(Debug)]
-pub(crate) enum Event {
-    Device(DeviceEvent),
-    Session(SessionEvent),
-}

@@ -1,22 +1,20 @@
 use crate::audio::devices::device::Device;
-use crate::audio::devices::device_event_client::DeviceEventClient;
 use crate::com::creatable_interface::CreatableInterface;
 use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
-use crate::event::Event;
 use crate::{
     audio::data_flow::DataFlow, audio::devices::device_collection::DeviceCollection,
     audio::devices::device_state::DeviceState, error::Error,
 };
-use std::sync::mpsc::Sender;
 use windows::core::PCWSTR;
 use windows::Win32::Media::Audio::{
     IMMDeviceEnumerator, IMMNotificationClient, MMDeviceEnumerator,
 };
 
+use super::device_event_stream::DeviceEventStream;
+
 pub(crate) struct DeviceEnumerator<'a> {
     runtime: &'a Runtime,
     raw_interface: IMMDeviceEnumerator,
-    raw_notification_client: Option<IMMNotificationClient>,
 }
 
 impl<'a> Interface<'a> for DeviceEnumerator<'a> {
@@ -26,7 +24,6 @@ impl<'a> Interface<'a> for DeviceEnumerator<'a> {
         Self {
             runtime,
             raw_interface,
-            raw_notification_client: None,
         }
     }
 }
@@ -58,36 +55,25 @@ impl<'a> DeviceEnumerator<'a> {
             .map_err(Error::from)
     }
 
-    pub(crate) fn start_events(&mut self, sender: Sender<Event>) -> Result<(), Error> {
-        self.stop_events()?;
-        self.raw_notification_client = Some(DeviceEventClient::new(sender).into());
-        unsafe {
-            self.raw_interface.RegisterEndpointNotificationCallback(
-                self.raw_notification_client.as_ref().unwrap(),
-            )
-        }
-        .map_err(Error::from)
+    pub(crate) fn get_device_event_stream(&'a self) -> Result<DeviceEventStream<'a>, Error> {
+        DeviceEventStream::new(self)
     }
 
-    pub(crate) fn stop_events(&mut self) -> Result<(), Error> {
-        match &self.raw_notification_client {
-            Some(raw_notification_client) => unsafe {
-                self.raw_interface
-                    .UnregisterEndpointNotificationCallback(raw_notification_client)
-                    .map_err(Error::from)
-            },
-            None => Ok(()),
-        }
-        .and_then(|_| {
-            self.raw_notification_client = None;
-            Ok(())
-        })
+    pub(crate) unsafe fn register_notification_client(
+        &self,
+        notification_client: &'a IMMNotificationClient,
+    ) -> Result<(), Error> {
+        self.raw_interface
+            .RegisterEndpointNotificationCallback(notification_client)
+            .map_err(Error::from)
     }
-}
 
-impl<'a> Drop for DeviceEnumerator<'a> {
-    fn drop(&mut self) {
-        self.stop_events()
-            .expect("Could not unregister device event client");
+    pub(crate) unsafe fn unregister_notification_client(
+        &self,
+        notification_client: &'a IMMNotificationClient,
+    ) -> Result<(), Error> {
+        self.raw_interface
+            .UnregisterEndpointNotificationCallback(notification_client)
+            .map_err(Error::from)
     }
 }
