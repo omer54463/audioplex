@@ -23,7 +23,7 @@ impl<'a> Interface<'a> for SessionManager<'a> {
 }
 
 impl<'a> SessionManager<'a> {
-    pub(crate) fn get_session_enumerator(
+    pub(crate) fn get_enumerator(
         &self,
     ) -> Result<InterfaceWrapper<'a, SessionEnumerator<'a>>, Error> {
         unsafe { self.raw_interface.GetSessionEnumerator() }
@@ -31,11 +31,9 @@ impl<'a> SessionManager<'a> {
             .map_err(Error::from)
     }
 
-    pub(crate) fn get_session_manager_event_stream(
-        &'a self,
-    ) -> Result<SessionManagerEventStream<'a>, Error> {
-        self.get_session_enumerator()
-            .and_then(|session_enumerator| session_enumerator.get_session_count())
+    pub(crate) fn get_event_stream(&'a self) -> Result<SessionManagerEventStream<'a>, Error> {
+        self.get_enumerator()
+            .and_then(|session_enumerator| session_enumerator.get_count())
             .and_then(|_| SessionManagerEventStream::new(self))
     }
 

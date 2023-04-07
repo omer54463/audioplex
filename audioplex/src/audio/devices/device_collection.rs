@@ -19,13 +19,13 @@ impl<'a> Interface<'a> for DeviceCollection<'a> {
 }
 
 impl<'a> DeviceCollection<'a> {
-    pub(crate) fn get_device_count(&self) -> Result<usize, Error> {
+    pub(crate) fn get_count(&self) -> Result<usize, Error> {
         unsafe { self.raw_interface.GetCount() }
             .map(|device_count| device_count as usize)
             .map_err(Error::from)
     }
 
-    pub(crate) fn get_device(&self, index: usize) -> Result<InterfaceWrapper<Device>, Error> {
+    pub(crate) fn get(&self, index: usize) -> Result<InterfaceWrapper<Device>, Error> {
         unsafe { self.raw_interface.Item(index as u32) }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)

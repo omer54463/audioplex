@@ -34,7 +34,7 @@ impl<'a> CreatableInterface<'a> for DeviceEnumerator<'a> {
 }
 
 impl<'a> DeviceEnumerator<'a> {
-    pub(crate) fn get_device_collection(
+    pub(crate) fn get_collection(
         &self,
         data_flow: DataFlow,
         device_state: DeviceState,
@@ -47,14 +47,14 @@ impl<'a> DeviceEnumerator<'a> {
         .map_err(Error::from)
     }
 
-    pub(crate) fn get_device(&self, device_id: String) -> Result<InterfaceWrapper<Device>, Error> {
+    pub(crate) fn get(&self, device_id: String) -> Result<InterfaceWrapper<Device>, Error> {
         let device_id: Vec<_> = device_id.encode_utf16().chain([0]).collect();
         unsafe { self.raw_interface.GetDevice(PCWSTR(device_id.as_ptr())) }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }
 
-    pub(crate) fn get_device_event_stream(&'a self) -> Result<DeviceEventStream<'a>, Error> {
+    pub(crate) fn get_event_stream(&'a self) -> Result<DeviceEventStream<'a>, Error> {
         DeviceEventStream::new(self)
     }
 

@@ -24,13 +24,13 @@ impl<'a> Interface<'a> for SessionEnumerator<'a> {
 }
 
 impl<'a> SessionEnumerator<'a> {
-    pub(crate) fn get_session_count(&self) -> Result<usize, Error> {
+    pub(crate) fn get_count(&self) -> Result<usize, Error> {
         unsafe { self.raw_interface.GetCount() }
             .map(|session_count| session_count as usize)
             .map_err(Error::from)
     }
 
-    pub(crate) fn get_session(&self, index: usize) -> Result<InterfaceWrapper<Session>, Error> {
+    pub(crate) fn get(&self, index: usize) -> Result<InterfaceWrapper<Session>, Error> {
         unsafe { self.raw_interface.GetSession(index as i32) }
             .and_then(|raw_interface| raw_interface.cast())
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))

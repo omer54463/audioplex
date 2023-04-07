@@ -19,13 +19,12 @@ fn main() -> Result<(), Error> {
 
     let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
-    let device_collection =
-        device_enumerator.get_device_collection(DataFlow::All, DeviceState::All)?;
+    let device_collection = device_enumerator.get_collection(DataFlow::All, DeviceState::All)?;
 
-    for device_index in 0..device_collection.get_device_count()? {
+    for device_index in 0..device_collection.get_count()? {
         println!("---------------------------------------------------------------------------");
 
-        let device = device_collection.get_device(device_index)?;
+        let device = device_collection.get(device_index)?;
 
         let device_id = device.get_id()?;
         println!("Device ID: {}", device_id);
@@ -49,13 +48,13 @@ fn main() -> Result<(), Error> {
         if device_state == DeviceState::Active {
             let session_manager = device.get_session_manager()?;
 
-            let session_enumerator = session_manager.get_session_enumerator()?;
+            let session_enumerator = session_manager.get_enumerator()?;
 
-            let session_count = session_enumerator.get_session_count()?;
+            let session_count = session_enumerator.get_count()?;
             println!("Session Count: {}", session_count);
 
             for session_index in 0..session_count {
-                let session = session_enumerator.get_session(session_index)?;
+                let session = session_enumerator.get(session_index)?;
 
                 let display_name = session.get_display_name()?;
                 println!("- Display Name: {}", display_name);
@@ -77,13 +76,13 @@ fn main() -> Result<(), Error> {
 
     println!("---------------------------------------------------------------------------");
 
-    let device = device_enumerator.get_device(String::from(
+    let device = device_enumerator.get(String::from(
         "{0.0.0.00000000}.{61e87334-029c-40b3-93ab-69ead02d5cd1}",
     ))?;
 
     let session_manager = device.get_session_manager()?;
 
-    let session_manager_event_stream = session_manager.get_session_manager_event_stream()?;
+    let session_manager_event_stream = session_manager.get_event_stream()?;
 
     loop {
         match session_manager_event_stream.recv() {
