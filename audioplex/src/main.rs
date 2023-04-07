@@ -55,23 +55,21 @@ fn main() -> Result<(), Error> {
             println!("Session Count: {}", session_count);
 
             for session_index in 0..session_count {
-                let session_control = session_enumerator.get_session_control(session_index)?;
+                let session = session_enumerator.get_session(session_index)?;
 
-                let display_name = session_control.get_display_name()?;
+                let display_name = session.get_display_name()?;
                 println!("- Display Name: {}", display_name);
 
-                let icon_path = session_control.get_icon_path()?;
+                let icon_path = session.get_icon_path()?;
                 println!("- Icon Path: {}", icon_path);
 
-                let session_state = session_control.get_state()?;
+                let session_state = session.get_state()?;
                 println!("- Session State: {:?}", session_state);
 
-                let session_extended_control = session_control.get_extended_control()?;
-
-                let is_system = session_extended_control.is_system()?;
+                let is_system = session.is_system()?;
                 println!("- Is System: {}", is_system);
 
-                let process_id = session_extended_control.get_process_id()?;
+                let process_id = session.get_process_id()?;
                 println!("- Process ID: {:?}", process_id);
             }
         }

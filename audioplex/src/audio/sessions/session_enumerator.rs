@@ -1,9 +1,11 @@
-use crate::audio::sessions::session_control::SessionControl;
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
     error::Error,
 };
+use windows::core::Interface as ComInterface;
 use windows::Win32::Media::Audio::IAudioSessionEnumerator;
+
+use super::session::Session;
 
 pub(crate) struct SessionEnumerator<'a> {
     runtime: &'a Runtime,
@@ -28,11 +30,9 @@ impl<'a> SessionEnumerator<'a> {
             .map_err(Error::from)
     }
 
-    pub(crate) fn get_session_control(
-        &self,
-        index: usize,
-    ) -> Result<InterfaceWrapper<SessionControl>, Error> {
+    pub(crate) fn get_session(&self, index: usize) -> Result<InterfaceWrapper<Session>, Error> {
         unsafe { self.raw_interface.GetSession(index as i32) }
+            .and_then(|raw_interface| raw_interface.cast())
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
     }

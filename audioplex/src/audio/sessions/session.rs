@@ -1,3 +1,4 @@
+use crate::audio::sessions::session_state::SessionState;
 use crate::{
     com::{interface::Interface, runtime::Runtime},
     error::Error,
@@ -10,11 +11,11 @@ use windows::{
     },
 };
 
-pub(crate) struct SessionExtendedControl {
+pub(crate) struct Session {
     raw_interface: IAudioSessionControl2,
 }
 
-impl<'a> Interface<'a> for SessionExtendedControl {
+impl<'a> Interface<'a> for Session {
     type RawInterface = IAudioSessionControl2;
 
     fn new(_runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
@@ -22,7 +23,25 @@ impl<'a> Interface<'a> for SessionExtendedControl {
     }
 }
 
-impl SessionExtendedControl {
+impl Session {
+    pub(crate) fn get_display_name(&self) -> Result<String, Error> {
+        unsafe { self.raw_interface.GetDisplayName() }
+            .map_err(Error::from)
+            .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
+    }
+
+    pub(crate) fn get_icon_path(&self) -> Result<String, Error> {
+        unsafe { self.raw_interface.GetIconPath() }
+            .map_err(Error::from)
+            .and_then(|id| unsafe { id.to_string() }.map_err(Error::from))
+    }
+
+    pub(crate) fn get_state(&self) -> Result<SessionState, Error> {
+        unsafe { self.raw_interface.GetState() }
+            .map_err(Error::from)
+            .and_then(|state| state.try_into())
+    }
+
     pub(crate) fn get_process_id(&self) -> Result<usize, Error> {
         unsafe { self.raw_interface.GetProcessId() }
             .map(|process_id| process_id as usize)

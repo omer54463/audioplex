@@ -17,34 +17,28 @@ impl SessionManagerEventClient {
         Self { sender }
     }
 
-    fn on_session_created(
-        &self,
-        raw_session_control: &Option<IAudioSessionControl>,
-    ) -> Result<(), Error> {
-        unsafe {
-            raw_session_control
-                .as_ref()
-                .unwrap()
+    fn on_session_created(&self, raw_session: &Option<IAudioSessionControl>) -> Result<(), Error> {
+        match raw_session {
+            Some(raw_session) => raw_session
                 .cast::<IAudioSessionControl2>()
-                .and_then(|raw_extended_session_control| {
-                    raw_extended_session_control.GetProcessId()
-                })
+                .and_then(|raw_session| unsafe { raw_session.GetProcessId() })
+                .map(|process_id| process_id as usize)
+                .map(|process_id| SessionManagerEvent::Add { process_id })
+                .map_err(Error::from)
+                .and_then(|session_manager_event| {
+                    self.sender.send(session_manager_event).map_err(Error::from)
+                }),
+            None => Ok(()),
         }
-        .map(|process_id| process_id as usize)
-        .map(|process_id| SessionManagerEvent::Add { process_id })
-        .map_err(Error::from)
-        .and_then(|session_manager_event| {
-            self.sender.send(session_manager_event).map_err(Error::from)
-        })
     }
 }
 
 impl IAudioSessionNotification_Impl for SessionManagerEventClient {
     fn OnSessionCreated(
         &self,
-        raw_session_control: &Option<IAudioSessionControl>,
+        raw_session: &Option<IAudioSessionControl>,
     ) -> windows::core::Result<()> {
-        self.on_session_created(raw_session_control)
+        self.on_session_created(raw_session)
             .map_err(|error| error.into())
     }
 }
