@@ -58,21 +58,21 @@ impl<'a> DeviceEnumerator<'a> {
         DeviceEventStream::new(self)
     }
 
-    pub(crate) unsafe fn register_notification_client(
+    pub(crate) unsafe fn register_event_client(
         &self,
-        notification_client: &'a IMMNotificationClient,
+        event_client: &'a IMMNotificationClient,
     ) -> Result<(), Error> {
         self.raw_interface
-            .RegisterEndpointNotificationCallback(notification_client)
+            .RegisterEndpointNotificationCallback(event_client)
             .map_err(Error::from)
     }
 
-    pub(crate) unsafe fn unregister_notification_client(
+    pub(crate) unsafe fn unregister_event_client(
         &self,
-        notification_client: &'a IMMNotificationClient,
+        event_client: &'a IMMNotificationClient,
     ) -> Result<(), Error> {
         self.raw_interface
-            .UnregisterEndpointNotificationCallback(notification_client)
+            .UnregisterEndpointNotificationCallback(event_client)
             .map_err(Error::from)
     }
 }

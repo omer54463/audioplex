@@ -26,7 +26,7 @@ impl<'a> DeviceEventStream<'a> {
         unsafe {
             device_event_stream
                 .device_enumerator
-                .register_notification_client(&device_event_stream.device_event_client)
+                .register_event_client(&device_event_stream.device_event_client)
         }
         .map(|_| device_event_stream)
     }
@@ -44,7 +44,7 @@ impl<'a> Drop for DeviceEventStream<'a> {
     fn drop(&mut self) {
         unsafe {
             self.device_enumerator
-                .unregister_notification_client(&self.device_event_client)
+                .unregister_event_client(&self.device_event_client)
         }
         .expect("Could not unregister device event client")
     }

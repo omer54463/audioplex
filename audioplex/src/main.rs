@@ -79,11 +79,17 @@ fn main() -> Result<(), Error> {
 
     println!("---------------------------------------------------------------------------");
 
-    let device_event_stream = device_enumerator.get_device_event_stream()?;
+    let device = device_enumerator.get_device(String::from(
+        "{0.0.0.00000000}.{61e87334-029c-40b3-93ab-69ead02d5cd1}",
+    ))?;
+
+    let session_manager = device.get_session_manager()?;
+
+    let session_manager_event_stream = session_manager.get_session_manager_event_stream()?;
 
     loop {
-        match device_event_stream.recv() {
-            Ok(device_event) => println!("{:?}", device_event),
+        match session_manager_event_stream.recv() {
+            Ok(session_manager_event) => println!("{:?}", session_manager_event),
             Err(_) => break,
         }
     }
