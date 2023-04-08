@@ -3,6 +3,7 @@ use crate::{
     com::{interface::Interface, runtime::Runtime},
     error::Error,
 };
+use windows::Win32::Media::Audio::IAudioSessionEvents;
 use windows::{
     core::Vtable,
     Win32::{
@@ -61,5 +62,23 @@ impl Session {
             _ if let Err(error) = hresult.ok() => Err(Error::from(error)),
             _ => Err(Error::UnexpectedHResult { hresult })
         }
+    }
+
+    pub(crate) unsafe fn register_event_client(
+        &self,
+        event_client: &IAudioSessionEvents,
+    ) -> Result<(), Error> {
+        self.raw_interface
+            .RegisterAudioSessionNotification(event_client)
+            .map_err(Error::from)
+    }
+
+    pub(crate) unsafe fn unregister_event_client(
+        &self,
+        event_client: &IAudioSessionEvents,
+    ) -> Result<(), Error> {
+        self.raw_interface
+            .UnregisterAudioSessionNotification(event_client)
+            .map_err(Error::from)
     }
 }

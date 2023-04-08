@@ -6,11 +6,8 @@ mod audio;
 mod com;
 mod error;
 
-use crate::audio::data_flow::DataFlow;
 use crate::audio::devices::device_enumerator::DeviceEnumerator;
-use crate::audio::devices::device_state::DeviceState;
-use crate::audio::properties::property_key::PropertyKey;
-use crate::audio::properties::property_store_access::PropertyStoreAccess;
+use crate::audio::sessions::session_manager_event::SessionManagerEvent;
 use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
 use crate::error::Error;
 
@@ -19,74 +16,17 @@ fn main() -> Result<(), Error> {
 
     let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
-    let device_collection = device_enumerator.get_collection(DataFlow::All, DeviceState::All)?;
-
-    for device_index in 0..device_collection.get_count()? {
-        println!("---------------------------------------------------------------------------");
-
-        let device = device_collection.get(device_index)?;
-
-        let device_id = device.get_id()?;
-        println!("Device ID: {}", device_id);
-
-        let device_state = device.get_state()?;
-        println!("Device State: {:?}", device_state);
-
-        if device_state != DeviceState::NotPresent {
-            let property_store = device.get_property_store(PropertyStoreAccess::Read)?;
-
-            let device_name = property_store.get_string(PropertyKey::DeviceName)?;
-            println!("Device Name: {}", device_name);
-
-            let icon_path = property_store.get_string(PropertyKey::IconPath)?;
-            println!("Icon Path: {}", icon_path);
-
-            let device_description = property_store.get_string(PropertyKey::DeviceDescription)?;
-            println!("Device Description: {}", device_description);
-        }
-
-        if device_state == DeviceState::Active {
-            let session_manager = device.get_session_manager()?;
-
-            let session_enumerator = session_manager.get_enumerator()?;
-
-            let session_count = session_enumerator.get_count()?;
-            println!("Session Count: {}", session_count);
-
-            for session_index in 0..session_count {
-                let session = session_enumerator.get(session_index)?;
-
-                let display_name = session.get_display_name()?;
-                println!("- Display Name: {}", display_name);
-
-                let icon_path = session.get_icon_path()?;
-                println!("- Icon Path: {}", icon_path);
-
-                let session_state = session.get_state()?;
-                println!("- Session State: {:?}", session_state);
-
-                let is_system = session.is_system()?;
-                println!("- Is System: {}", is_system);
-
-                let process_id = session.get_process_id()?;
-                println!("- Process ID: {:?}", process_id);
-            }
-        }
-    }
-
-    println!("---------------------------------------------------------------------------");
-
     let device = device_enumerator.get(String::from(
         "{0.0.0.00000000}.{61e87334-029c-40b3-93ab-69ead02d5cd1}",
     ))?;
 
     let session_manager = device.get_session_manager()?;
 
-    let session_manager_event_stream = session_manager.get_event_stream()?;
+    let event_stream = session_manager.get_event_stream()?;
 
     loop {
-        match session_manager_event_stream.recv() {
-            Ok(session_manager_event) => println!("{:?}", session_manager_event),
+        match event_stream.recv() {
+            Ok(SessionManagerEvent::Add { session }) => println!("{:?}", session.get_process_id()?),
             Err(_) => break,
         }
     }

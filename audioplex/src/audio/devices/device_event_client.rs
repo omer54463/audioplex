@@ -1,42 +1,61 @@
-use crate::audio::devices::device_event::DeviceEvent;
+use crate::audio::devices::device_enumerator::DeviceEnumerator;
+use crate::audio::devices::{device::Device, device_event::DeviceEvent};
 use crate::audio::properties::property_key::PropertyKey;
+use crate::com::interface_wrapper::InterfaceWrapper;
 use crate::error::Error;
+use audioplex_implement::implement;
 use std::sync::mpsc::Sender;
-use windows::core::{implement, PCWSTR};
+use windows::core::PCWSTR;
 use windows::Win32::Media::Audio::{
     EDataFlow, ERole, IMMNotificationClient, IMMNotificationClient_Impl,
 };
 use windows::Win32::UI::Shell::PropertiesSystem::PROPERTYKEY;
 
 #[implement(IMMNotificationClient)]
-pub(crate) struct DeviceEventClient {
-    sender: Sender<DeviceEvent>,
+pub(crate) struct DeviceEventClient<'a> {
+    device_enumerator: &'a DeviceEnumerator<'a>,
+    sender: Sender<DeviceEvent<'a>>,
 }
 
-impl DeviceEventClient {
-    pub(crate) fn new(sender: Sender<DeviceEvent>) -> Self {
-        Self { sender }
+impl<'a> DeviceEventClient<'a> {
+    pub(crate) fn new(
+        device_enumerator: &'a DeviceEnumerator<'a>,
+        sender: Sender<DeviceEvent<'a>>,
+    ) -> Self {
+        Self {
+            device_enumerator,
+            sender,
+        }
+    }
+
+    fn get_device(&self, device_id: &PCWSTR) -> Result<InterfaceWrapper<'a, Device<'a>>, Error> {
+        unsafe { device_id.to_string() }
+            .map_err(Error::from)
+            .and_then(|device_id| self.device_enumerator.get(device_id))
     }
 
     fn on_device_state_changed(&self, device_id: &PCWSTR) -> Result<(), Error> {
-        let device_id = unsafe { device_id.to_string() }?;
-        self.sender
-            .send(DeviceEvent::StateChange { device_id })
-            .map_err(Error::from)
+        self.get_device(device_id).and_then(|device| {
+            self.sender
+                .send(DeviceEvent::StateChange { device })
+                .map_err(Error::from)
+        })
     }
 
     fn on_device_added(&self, device_id: &PCWSTR) -> Result<(), Error> {
-        let device_id = unsafe { device_id.to_string() }?;
-        self.sender
-            .send(DeviceEvent::Add { device_id })
-            .map_err(Error::from)
+        self.get_device(device_id).and_then(|device| {
+            self.sender
+                .send(DeviceEvent::Add { device })
+                .map_err(Error::from)
+        })
     }
 
     fn on_device_removed(&self, device_id: &PCWSTR) -> Result<(), Error> {
-        let device_id = unsafe { device_id.to_string() }?;
-        self.sender
-            .send(DeviceEvent::Remove { device_id })
-            .map_err(Error::from)
+        self.get_device(device_id).and_then(|device| {
+            self.sender
+                .send(DeviceEvent::Remove { device })
+                .map_err(Error::from)
+        })
     }
 
     fn on_property_value_changed(
@@ -44,13 +63,13 @@ impl DeviceEventClient {
         device_id: &PCWSTR,
         property_key: &PROPERTYKEY,
     ) -> Result<(), Error> {
-        let device_id = unsafe { device_id.to_string() }?;
+        let device = self.get_device(device_id)?;
 
         let device_event = match (*property_key).try_into() {
-            Ok(PropertyKey::DeviceName) => Ok(Some(DeviceEvent::NameChange { device_id })),
-            Ok(PropertyKey::IconPath) => Ok(Some(DeviceEvent::IconChange { device_id })),
+            Ok(PropertyKey::DeviceName) => Ok(Some(DeviceEvent::NameChange { device })),
+            Ok(PropertyKey::IconPath) => Ok(Some(DeviceEvent::IconChange { device })),
             Ok(PropertyKey::DeviceDescription) => {
-                Ok(Some(DeviceEvent::DescriptionChange { device_id }))
+                Ok(Some(DeviceEvent::DescriptionChange { device }))
             }
             Err(error) => Err(error),
         };
@@ -63,7 +82,7 @@ impl DeviceEventClient {
     }
 }
 
-impl IMMNotificationClient_Impl for DeviceEventClient {
+impl<'a> IMMNotificationClient_Impl for DeviceEventClient<'a> {
     fn OnDeviceStateChanged(
         &self,
         device_id: &PCWSTR,

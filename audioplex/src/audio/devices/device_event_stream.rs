@@ -10,7 +10,7 @@ use windows::Win32::Media::Audio::IMMNotificationClient;
 pub(crate) struct DeviceEventStream<'a> {
     device_enumerator: &'a DeviceEnumerator<'a>,
     device_event_client: IMMNotificationClient,
-    device_event_receiver: Receiver<DeviceEvent>,
+    device_event_receiver: Receiver<DeviceEvent<'a>>,
 }
 
 impl<'a> DeviceEventStream<'a> {
@@ -19,7 +19,7 @@ impl<'a> DeviceEventStream<'a> {
 
         let device_event_stream = Self {
             device_enumerator,
-            device_event_client: DeviceEventClient::new(sender).into(),
+            device_event_client: DeviceEventClient::new(device_enumerator, sender).into(),
             device_event_receiver: receiver,
         };
 
@@ -33,7 +33,7 @@ impl<'a> DeviceEventStream<'a> {
 }
 
 impl<'a> Deref for DeviceEventStream<'a> {
-    type Target = Receiver<DeviceEvent>;
+    type Target = Receiver<DeviceEvent<'a>>;
 
     fn deref(&self) -> &Self::Target {
         &self.device_event_receiver

@@ -1,7 +1,4 @@
-use crate::audio::{
-    devices::device_event::DeviceEvent, properties::property_type::PropertyType,
-    sessions::session_manager_event::SessionManagerEvent,
-};
+use crate::audio::properties::property_type::PropertyType;
 use std::{string::FromUtf16Error, sync::mpsc::SendError};
 use thiserror::Error;
 use windows::{
@@ -20,10 +17,6 @@ pub(crate) enum Error {
     Windows(#[from] ::windows::core::Error),
     #[error("FromUtf16Error error")]
     FromUtf16(#[from] FromUtf16Error),
-    #[error("Device event send error")]
-    DeviceSend(#[from] SendError<DeviceEvent>),
-    #[error("Session manager event send error")]
-    SessionManagerSend(#[from] SendError<SessionManagerEvent>),
     #[error("Unknown data flow {data_flow:?}")]
     UnknownDataFlow { data_flow: EDataFlow },
     #[error("Unknown device state {device_state:?}")]
@@ -45,6 +38,14 @@ pub(crate) enum Error {
     UnknownSessionState { session_state: AudioSessionState },
     #[error("Unexpected HResult {hresult}")]
     UnexpectedHResult { hresult: HRESULT },
+    #[error("Send error")]
+    Send,
+}
+
+impl<T> From<SendError<T>> for Error {
+    fn from(_value: SendError<T>) -> Self {
+        Self::Send
+    }
 }
 
 impl From<Error> for windows::core::Error {

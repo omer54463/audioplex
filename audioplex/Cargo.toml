@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-thiserror = "1.0.39"
+audioplex_implement = { path = "../audioplex_implement" }
+thiserror           = "1.0.39"
 
 [dependencies.windows]
 version = "0.44.0"

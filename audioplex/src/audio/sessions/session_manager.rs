@@ -34,7 +34,7 @@ impl<'a> SessionManager<'a> {
     pub(crate) fn get_event_stream(&'a self) -> Result<SessionManagerEventStream<'a>, Error> {
         self.get_enumerator()
             .and_then(|session_enumerator| session_enumerator.get_count())
-            .and_then(|_| SessionManagerEventStream::new(self))
+            .and_then(|_| SessionManagerEventStream::new(self.runtime, self))
     }
 
     pub(crate) unsafe fn register_event_client(
@@ -48,10 +48,10 @@ impl<'a> SessionManager<'a> {
 
     pub(crate) unsafe fn unregister_event_client(
         &self,
-        notification_client: &'a IAudioSessionNotification,
+        event_client: &'a IAudioSessionNotification,
     ) -> Result<(), Error> {
         self.raw_interface
-            .UnregisterSessionNotification(notification_client)
+            .UnregisterSessionNotification(event_client)
             .map_err(Error::from)
     }
 }

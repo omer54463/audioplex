@@ -1,2 +1,2 @@
 [workspace]
-members = ["audioplex"]
+members = ["audioplex", "audioplex_implement"]
