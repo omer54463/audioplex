@@ -8,8 +8,8 @@ use windows::Win32::Media::Audio::IAudioSessionEvents;
 
 pub(crate) struct SessionEventStream<'a> {
     session: &'a Session,
-    session_event_client: IAudioSessionEvents,
-    session_event_receiver: Receiver<SessionEvent>,
+    event_client: IAudioSessionEvents,
+    receiver: Receiver<SessionEvent<'a>>,
 }
 
 impl<'a> SessionEventStream<'a> {
@@ -18,33 +18,30 @@ impl<'a> SessionEventStream<'a> {
 
         let session_event_stream = Self {
             session,
-            session_event_client: SessionEventClient::new(sender).into(),
-            session_event_receiver: receiver,
+            event_client: SessionEventClient::new(session.get_id(), sender).into(),
+            receiver,
         };
 
         unsafe {
             session_event_stream
                 .session
-                .register_event_client(&session_event_stream.session_event_client)
+                .register_event_client(&session_event_stream.event_client)
         }
         .map(|_| session_event_stream)
     }
 }
 
 impl<'a> Deref for SessionEventStream<'a> {
-    type Target = Receiver<SessionEvent>;
+    type Target = Receiver<SessionEvent<'a>>;
 
     fn deref(&self) -> &Self::Target {
-        &self.session_event_receiver
+        &self.receiver
     }
 }
 
 impl<'a> Drop for SessionEventStream<'a> {
     fn drop(&mut self) {
-        unsafe {
-            self.session
-                .unregister_event_client(&self.session_event_client)
-        }
-        .expect("Could not unregister session manager event client")
+        unsafe { self.session.unregister_event_client(&self.event_client) }
+            .expect("Could not unregister session manager event client")
     }
 }

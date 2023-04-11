@@ -47,7 +47,7 @@ impl<'a> DeviceEnumerator<'a> {
         .map_err(Error::from)
     }
 
-    pub(crate) fn get(&self, device_id: String) -> Result<InterfaceWrapper<Device>, Error> {
+    pub(crate) fn get(&self, device_id: &String) -> Result<InterfaceWrapper<Device>, Error> {
         let device_id: Vec<_> = device_id.encode_utf16().chain([0]).collect();
         unsafe { self.raw_interface.GetDevice(PCWSTR(device_id.as_ptr())) }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))

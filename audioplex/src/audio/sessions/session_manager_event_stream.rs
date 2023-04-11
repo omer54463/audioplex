@@ -1,5 +1,5 @@
+use crate::audio::sessions::session_event::SessionEvent;
 use crate::audio::sessions::session_manager::SessionManager;
-use crate::audio::sessions::session_manager_event::SessionManagerEvent;
 use crate::audio::sessions::session_manager_event_client::SessionManagerEventClient;
 use crate::com::runtime::Runtime;
 use crate::error::Error;
@@ -9,8 +9,8 @@ use windows::Win32::Media::Audio::IAudioSessionNotification;
 
 pub(crate) struct SessionManagerEventStream<'a> {
     session_manager: &'a SessionManager<'a>,
-    session_manager_event_client: IAudioSessionNotification,
-    session_event_receiver: Receiver<SessionManagerEvent<'a>>,
+    event_client: IAudioSessionNotification,
+    receiver: Receiver<SessionEvent<'a>>,
 }
 
 impl<'a> SessionManagerEventStream<'a> {
@@ -22,24 +22,24 @@ impl<'a> SessionManagerEventStream<'a> {
 
         let session_manager_event_stream = Self {
             session_manager,
-            session_manager_event_client: SessionManagerEventClient::new(runtime, sender).into(),
-            session_event_receiver: receiver,
+            event_client: SessionManagerEventClient::new(runtime, sender).into(),
+            receiver,
         };
 
         unsafe {
             session_manager_event_stream
                 .session_manager
-                .register_event_client(&session_manager_event_stream.session_manager_event_client)
+                .register_event_client(&session_manager_event_stream.event_client)
         }
         .map(|_| session_manager_event_stream)
     }
 }
 
 impl<'a> Deref for SessionManagerEventStream<'a> {
-    type Target = Receiver<SessionManagerEvent<'a>>;
+    type Target = Receiver<SessionEvent<'a>>;
 
     fn deref(&self) -> &Self::Target {
-        &self.session_event_receiver
+        &self.receiver
     }
 }
 
@@ -47,7 +47,7 @@ impl<'a> Drop for SessionManagerEventStream<'a> {
     fn drop(&mut self) {
         unsafe {
             self.session_manager
-                .unregister_event_client(&self.session_manager_event_client)
+                .unregister_event_client(&self.event_client)
         }
         .expect("Could not unregister session manager event client")
     }

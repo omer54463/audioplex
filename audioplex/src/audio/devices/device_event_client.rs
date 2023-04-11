@@ -1,7 +1,7 @@
 use crate::audio::devices::device_enumerator::DeviceEnumerator;
-use crate::audio::devices::{device::Device, device_event::DeviceEvent};
+use crate::audio::devices::device_event::DeviceEvent;
 use crate::audio::properties::property_key::PropertyKey;
-use crate::com::interface_wrapper::InterfaceWrapper;
+use crate::audio::properties::property_store_access::PropertyStoreAccess;
 use crate::error::Error;
 use audioplex_implement::implement;
 use std::sync::mpsc::Sender;
@@ -28,34 +28,30 @@ impl<'a> DeviceEventClient<'a> {
         }
     }
 
-    fn get_device(&self, device_id: &PCWSTR) -> Result<InterfaceWrapper<'a, Device<'a>>, Error> {
-        unsafe { device_id.to_string() }
-            .map_err(Error::from)
-            .and_then(|device_id| self.device_enumerator.get(device_id))
-    }
+    fn on_device_state_changed(&self, device_id: &PCWSTR, device_state: u32) -> Result<(), Error> {
+        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
+        let device_state = device_state.try_into()?;
+        let device_event = DeviceEvent::StateChange {
+            device_id,
+            device_state,
+        };
 
-    fn on_device_state_changed(&self, device_id: &PCWSTR) -> Result<(), Error> {
-        self.get_device(device_id).and_then(|device| {
-            self.sender
-                .send(DeviceEvent::StateChange { device })
-                .map_err(Error::from)
-        })
+        self.sender.send(device_event).map_err(Error::from)
     }
 
     fn on_device_added(&self, device_id: &PCWSTR) -> Result<(), Error> {
-        self.get_device(device_id).and_then(|device| {
-            self.sender
-                .send(DeviceEvent::Add { device })
-                .map_err(Error::from)
-        })
+        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
+        let device = self.device_enumerator.get(&device_id)?;
+        let device_event = DeviceEvent::Add { device_id, device };
+
+        self.sender.send(device_event).map_err(Error::from)
     }
 
     fn on_device_removed(&self, device_id: &PCWSTR) -> Result<(), Error> {
-        self.get_device(device_id).and_then(|device| {
-            self.sender
-                .send(DeviceEvent::Remove { device })
-                .map_err(Error::from)
-        })
+        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
+        let device_event = DeviceEvent::Remove { device_id };
+
+        self.sender.send(device_event).map_err(Error::from)
     }
 
     fn on_property_value_changed(
@@ -63,13 +59,31 @@ impl<'a> DeviceEventClient<'a> {
         device_id: &PCWSTR,
         property_key: &PROPERTYKEY,
     ) -> Result<(), Error> {
-        let device = self.get_device(device_id)?;
+        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
+        let device = self.device_enumerator.get(&device_id)?;
+        let property_store = device.get_property_store(PropertyStoreAccess::Read)?;
 
         let device_event = match (*property_key).try_into() {
-            Ok(PropertyKey::DeviceName) => Ok(Some(DeviceEvent::NameChange { device })),
-            Ok(PropertyKey::IconPath) => Ok(Some(DeviceEvent::IconChange { device })),
+            Ok(PropertyKey::DeviceName) => {
+                let display_name = property_store.get_string(PropertyKey::DeviceName)?;
+                Ok(Some(DeviceEvent::NameChange {
+                    device_id,
+                    display_name,
+                }))
+            }
+            Ok(PropertyKey::IconPath) => {
+                let icon_path = property_store.get_string(PropertyKey::IconPath)?;
+                Ok(Some(DeviceEvent::IconChange {
+                    device_id,
+                    icon_path,
+                }))
+            }
             Ok(PropertyKey::DeviceDescription) => {
-                Ok(Some(DeviceEvent::DescriptionChange { device }))
+                let description = property_store.get_string(PropertyKey::DeviceDescription)?;
+                Ok(Some(DeviceEvent::DescriptionChange {
+                    device_id,
+                    description,
+                }))
             }
             Err(error) => Err(error),
         };
@@ -86,9 +100,9 @@ impl<'a> IMMNotificationClient_Impl for DeviceEventClient<'a> {
     fn OnDeviceStateChanged(
         &self,
         device_id: &PCWSTR,
-        _device_state: u32,
+        device_state: u32,
     ) -> windows::core::Result<()> {
-        self.on_device_state_changed(&device_id)
+        self.on_device_state_changed(&device_id, device_state)
             .map_err(|error| error.into())
     }
 

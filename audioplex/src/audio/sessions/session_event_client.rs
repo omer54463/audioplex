@@ -13,56 +13,75 @@ use windows::{
 };
 
 #[implement(IAudioSessionEvents)]
-pub(crate) struct SessionEventClient {
-    sender: Sender<SessionEvent>,
+pub(crate) struct SessionEventClient<'a> {
+    session_id: String,
+    sender: Sender<SessionEvent<'a>>,
 }
 
-impl SessionEventClient {
-    pub(crate) fn new(sender: Sender<SessionEvent>) -> Self {
-        Self { sender }
+impl<'a> SessionEventClient<'a> {
+    pub(crate) fn new(session_id: String, sender: Sender<SessionEvent<'a>>) -> Self {
+        Self { session_id, sender }
     }
 
     fn on_display_name_changed(&self, display_name: &PCWSTR) -> Result<(), Error> {
-        unsafe { display_name.to_string() }
-            .map_err(Error::from)
-            .and_then(|display_name| {
-                self.sender
-                    .send(SessionEvent::NameChange { display_name })
-                    .map_err(Error::from)
-            })
+        let session_id = self.session_id.clone();
+        let display_name = unsafe { display_name.to_string() }.map_err(Error::from)?;
+
+        let session_event = SessionEvent::NameChange {
+            session_id,
+            display_name,
+        };
+
+        self.sender.send(session_event).map_err(Error::from)
     }
 
     fn on_icon_path_changed(&self, icon_path: &PCWSTR) -> Result<(), Error> {
-        unsafe { icon_path.to_string() }
-            .map_err(Error::from)
-            .and_then(|icon_path| {
-                self.sender
-                    .send(SessionEvent::IconChange { icon_path })
-                    .map_err(Error::from)
-            })
+        let session_id = self.session_id.clone();
+        let icon_path = unsafe { icon_path.to_string() }.map_err(Error::from)?;
+
+        let session_event = SessionEvent::IconChange {
+            session_id,
+            icon_path,
+        };
+
+        self.sender.send(session_event).map_err(Error::from)
     }
 
     fn on_simple_volume_changed(&self, volume: f32, mute: BOOL) -> Result<(), Error> {
+        let session_id = self.session_id.clone();
         let mute = mute.as_bool();
-        self.sender
-            .send(SessionEvent::VolumeChange { volume, mute })
-            .map_err(Error::from)
+
+        let session_event = SessionEvent::VolumeChange {
+            session_id,
+            volume,
+            mute,
+        };
+
+        self.sender.send(session_event).map_err(Error::from)
     }
 
     fn on_state_changed(&self, session_state: AudioSessionState) -> Result<(), Error> {
-        session_state.try_into().and_then(|session_state| {
-            self.sender
-                .send(SessionEvent::StateChange { session_state })
-                .map_err(Error::from)
-        })
+        let session_id = self.session_id.clone();
+        let session_state = session_state.try_into()?;
+
+        let session_event = SessionEvent::StateChange {
+            session_id,
+            session_state,
+        };
+
+        self.sender.send(session_event).map_err(Error::from)
     }
 
     fn on_session_disconnected(&self) -> Result<(), Error> {
-        self.sender.send(SessionEvent::Remove).map_err(Error::from)
+        let session_id = self.session_id.clone();
+
+        let session_event = SessionEvent::Remove { session_id };
+
+        self.sender.send(session_event).map_err(Error::from)
     }
 }
 
-impl IAudioSessionEvents_Impl for SessionEventClient {
+impl<'a> IAudioSessionEvents_Impl for SessionEventClient<'a> {
     fn OnDisplayNameChanged(
         &self,
         display_name: &PCWSTR,

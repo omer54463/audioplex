@@ -1,22 +1,30 @@
-use crate::{audio::devices::device::Device, com::interface_wrapper::InterfaceWrapper};
+use crate::{
+    audio::devices::{device::Device, device_state::DeviceState},
+    com::interface_wrapper::InterfaceWrapper,
+};
 
 pub(crate) enum DeviceEvent<'a> {
     Add {
+        device_id: String,
         device: InterfaceWrapper<'a, Device<'a>>,
     },
     Remove {
-        device: InterfaceWrapper<'a, Device<'a>>,
+        device_id: String,
     },
     NameChange {
-        device: InterfaceWrapper<'a, Device<'a>>,
+        device_id: String,
+        display_name: String,
     },
     IconChange {
-        device: InterfaceWrapper<'a, Device<'a>>,
+        device_id: String,
+        icon_path: String,
     },
     DescriptionChange {
-        device: InterfaceWrapper<'a, Device<'a>>,
+        device_id: String,
+        description: String,
     },
     StateChange {
-        device: InterfaceWrapper<'a, Device<'a>>,
+        device_id: String,
+        device_state: DeviceState,
     },
 }
