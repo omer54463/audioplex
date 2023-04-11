@@ -3,6 +3,7 @@ use crate::{
     com::{interface::Interface, runtime::Runtime},
     error::Error,
 };
+use uuid::Uuid;
 use windows::Win32::Media::Audio::IAudioSessionEvents;
 use windows::{
     core::Vtable,
@@ -13,6 +14,7 @@ use windows::{
 };
 
 pub(crate) struct Session {
+    id: Uuid,
     raw_interface: IAudioSessionControl2,
 }
 
@@ -20,11 +22,18 @@ impl<'a> Interface<'a> for Session {
     type RawInterface = IAudioSessionControl2;
 
     fn new(_runtime: &'a Runtime, raw_interface: Self::RawInterface) -> Self {
-        Self { raw_interface }
+        Self {
+            id: Uuid::new_v4(),
+            raw_interface,
+        }
     }
 }
 
 impl Session {
+    pub(crate) fn get_id(&self) -> String {
+        format!("{}", self.id.as_braced())
+    }
+
     pub(crate) fn get_display_name(&self) -> Result<String, Error> {
         unsafe { self.raw_interface.GetDisplayName() }
             .map_err(Error::from)

@@ -12,7 +12,7 @@ use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
 use crate::error::Error;
 
 fn main() -> Result<(), Error> {
-    let runtime = Runtime::new(RuntimeMode::SingleThreaded)?;
+    let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;
 
     let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
 
