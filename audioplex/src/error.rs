@@ -17,6 +17,9 @@ pub(crate) enum Error {
     Windows(#[from] ::windows::core::Error),
     #[error("FromUtf16Error error")]
     FromUtf16(#[from] FromUtf16Error),
+    #[error("Send error")]
+    Send,
+
     #[error("Unknown data flow {data_flow:?}")]
     UnknownDataFlow { data_flow: EDataFlow },
     #[error("Unknown device state {device_state:?}")]
@@ -29,17 +32,16 @@ pub(crate) enum Error {
     UnknownRole { role: ERole },
     #[error("Unknown runtime mode {runtime_mode:?}")]
     UnknownRuntimeMode { runtime_mode: COINIT },
+    #[error("Unknown session state {session_state:?}")]
+    UnknownSessionState { session_state: AudioSessionState },
+
     #[error("Expected {expected_type:?}, found {found_type:?}")]
     UnexpectedPropertyType {
         expected_type: PropertyType,
         found_type: PropertyType,
     },
-    #[error("Unknown session state {session_state:?}")]
-    UnknownSessionState { session_state: AudioSessionState },
     #[error("Unexpected HResult {hresult}")]
     UnexpectedHResult { hresult: HRESULT },
-    #[error("Send error")]
-    Send,
 }
 
 impl<T> From<SendError<T>> for Error {

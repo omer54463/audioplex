@@ -1,3 +1,4 @@
+use crate::audio::sessions::sessio_event_stream::SessionEventStream;
 use crate::audio::sessions::session_state::SessionState;
 use crate::{
     com::{interface::Interface, runtime::Runtime},
@@ -29,7 +30,7 @@ impl<'a> Interface<'a> for Session {
     }
 }
 
-impl Session {
+impl<'a> Session {
     pub(crate) fn get_id(&self) -> String {
         format!("{}", self.id.as_braced())
     }
@@ -71,6 +72,10 @@ impl Session {
             _ if let Err(error) = hresult.ok() => Err(Error::from(error)),
             _ => Err(Error::UnexpectedHResult { hresult })
         }
+    }
+
+    pub(crate) fn get_event_stream(&'a self) -> Result<SessionEventStream<'a>, Error> {
+        SessionEventStream::new(self)
     }
 
     pub(crate) unsafe fn register_event_client(
