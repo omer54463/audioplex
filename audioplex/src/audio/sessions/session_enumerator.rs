@@ -33,7 +33,7 @@ impl<'a> SessionEnumerator<'a> {
     pub(crate) fn get(&self, index: usize) -> Result<InterfaceWrapper<Session>, Error> {
         unsafe { self.raw_interface.GetSession(index as i32) }
             .and_then(|raw_interface| raw_interface.cast())
-            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map(|raw_interface| self.runtime.wrap(raw_interface))
             .map_err(Error::from)
     }
 }

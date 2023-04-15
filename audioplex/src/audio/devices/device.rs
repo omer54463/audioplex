@@ -44,13 +44,13 @@ impl<'a> Device<'a> {
         property_access: PropertyStoreAccess,
     ) -> Result<InterfaceWrapper<PropertyStore>, Error> {
         unsafe { self.raw_interface.OpenPropertyStore(property_access.into()) }
-            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map(|raw_interface| self.runtime.wrap(raw_interface))
             .map_err(Error::from)
     }
 
     pub(crate) fn get_session_manager(&self) -> Result<InterfaceWrapper<SessionManager>, Error> {
         unsafe { self.raw_interface.Activate(CLSCTX_ALL, None) }
-            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map(|raw_interface| self.runtime.wrap(raw_interface))
             .map_err(Error::from)
     }
 }

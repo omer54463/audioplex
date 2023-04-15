@@ -35,7 +35,7 @@ impl<'a> SessionManagerEventClient<'a> {
             Some(raw_interface) => {
                 let session: InterfaceWrapper<Session> = raw_interface
                     .cast::<IAudioSessionControl2>()
-                    .map(|raw_interface| self.runtime.wrap_instance(raw_interface))?;
+                    .map(|raw_interface| self.runtime.wrap(raw_interface))?;
                 let session_id = session.get_id();
 
                 let session_event = SessionEvent::Add {

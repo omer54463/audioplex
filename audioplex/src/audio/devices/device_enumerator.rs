@@ -48,14 +48,14 @@ impl<'a> DeviceEnumerator<'a> {
             self.raw_interface
                 .EnumAudioEndpoints(data_flow.into(), device_state.into())
         }
-        .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+        .map(|raw_interface| self.runtime.wrap(raw_interface))
         .map_err(Error::from)
     }
 
     pub(crate) fn get(&self, device_id: &String) -> Result<InterfaceWrapper<Device>, Error> {
         let device_id: Vec<_> = device_id.encode_utf16().chain([0]).collect();
         unsafe { self.raw_interface.GetDevice(PCWSTR(device_id.as_ptr())) }
-            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map(|raw_interface| self.runtime.wrap(raw_interface))
             .map_err(Error::from)
     }
 
@@ -68,7 +68,7 @@ impl<'a> DeviceEnumerator<'a> {
             self.raw_interface
                 .GetDefaultAudioEndpoint(data_flow.into(), role.into())
         }
-        .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+        .map(|raw_interface| self.runtime.wrap(raw_interface))
         .map_err(Error::from)
     }
 

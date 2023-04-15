@@ -28,7 +28,7 @@ impl<'a> Interface<'a> for SessionManager<'a> {
 impl<'a> SessionManager<'a> {
     pub(crate) fn get_enumerator(&self) -> Result<InterfaceWrapper<SessionEnumerator>, Error> {
         unsafe { self.raw_interface.GetSessionEnumerator() }
-            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map(|raw_interface| self.runtime.wrap(raw_interface))
             .map_err(Error::from)
     }
 

@@ -16,7 +16,7 @@ impl Runtime {
             .map_err(Error::Windows)
     }
 
-    pub(crate) fn create_instance<'a, CI: CreatableInterface<'a>>(
+    pub(crate) fn create<'a, CI: CreatableInterface<'a>>(
         &'a self,
     ) -> Result<InterfaceWrapper<CI>, Error> {
         unsafe { CoCreateInstance(&CI::get_guid(), None, CLSCTX_ALL) }
@@ -25,7 +25,7 @@ impl Runtime {
             .map_err(Error::Windows)
     }
 
-    pub(crate) fn wrap_instance<'a, I: Interface<'a>>(
+    pub(crate) fn wrap<'a, I: Interface<'a>>(
         &'a self,
         raw_interface: I::RawInterface,
     ) -> InterfaceWrapper<I> {

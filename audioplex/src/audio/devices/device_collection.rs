@@ -32,7 +32,7 @@ impl<'a> DeviceCollection<'a> {
 
     pub(crate) fn get(&self, index: usize) -> Result<InterfaceWrapper<Device>, Error> {
         unsafe { self.raw_interface.Item(index as u32) }
-            .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+            .map(|raw_interface| self.runtime.wrap(raw_interface))
             .map_err(Error::from)
     }
 }

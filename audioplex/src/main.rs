@@ -13,7 +13,7 @@ mod error;
 fn main() -> Result<(), Error> {
     let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;
 
-    let device_enumerator = runtime.create_instance::<DeviceEnumerator>()?;
+    let device_enumerator = runtime.create::<DeviceEnumerator>()?;
 
     let device = device_enumerator.get(&String::from(
         "{0.0.0.00000000}.{61e87334-029c-40b3-93ab-69ead02d5cd1}",
