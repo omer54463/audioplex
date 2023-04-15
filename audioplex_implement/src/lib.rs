@@ -8,7 +8,7 @@ use syn::{
     parse_macro_input, parse_str,
     punctuated::Punctuated,
     token::Brace,
-    DeriveInput, GenericParam, Ident, ItemStruct, LifetimeParam, Token,
+    DeriveInput, GenericParam, Ident, ItemStruct, Token,
 };
 
 #[proc_macro_attribute]
@@ -18,15 +18,7 @@ pub fn implement(attributes: TokenStream, original_type: TokenStream) -> TokenSt
 
     let original_type2 = original_type.clone();
     let derive_input = parse_macro_input!(original_type2 as DeriveInput);
-    let lifetime_params: Vec<&LifetimeParam> = derive_input
-        .generics
-        .params
-        .iter()
-        .filter_map(|param| match param {
-            GenericParam::Lifetime(lifetime_param) => Some(lifetime_param),
-            _ => None,
-        })
-        .collect();
+    let params: Vec<&GenericParam> = derive_input.generics.params.iter().collect();
 
     let identity_type = if let Some(first) = attributes.implement.get(0) {
         first.to_ident()
@@ -35,16 +27,17 @@ pub fn implement(attributes: TokenStream, original_type: TokenStream) -> TokenSt
     };
 
     let constraints = quote! {
-        #(#lifetime_params),*
+        #(#params),*
     };
 
-    let generics: Vec<TokenStream2> = lifetime_params
+    let generics: Vec<TokenStream2> = params
         .iter()
-        .map(|lifetime_param| {
-            format!("'{}", lifetime_param.lifetime.ident)
-                .parse::<TokenStream2>()
-                .unwrap()
+        .map(|param| match param {
+            GenericParam::Lifetime(lifetime_param) => format!("'{}", lifetime_param.lifetime.ident),
+            GenericParam::Type(type_param) => format!("'{}", type_param.ident),
+            GenericParam::Const(const_param) => format!("'{}", const_param.ident),
         })
+        .map(|string| string.parse::<TokenStream2>().unwrap())
         .collect();
 
     let original_type3 = original_type.clone();
