@@ -4,7 +4,6 @@ use windows::{
 };
 
 use crate::{
-    audio::data_flow::DataFlow,
     com::{
         creatable_interface::CreatableInterface, interface::Interface,
         interface_wrapper::InterfaceWrapper, runtime::Runtime,
@@ -13,8 +12,8 @@ use crate::{
 };
 
 use super::{
-    device::Device, device_collection::DeviceCollection, device_event_stream::DeviceEventStream,
-    device_state::DeviceState,
+    data_flow::DataFlow, device::Device, device_collection::DeviceCollection,
+    device_event_stream::DeviceEventStream, device_state::DeviceState, role::Role,
 };
 
 pub(crate) struct DeviceEnumerator<'a> {
@@ -58,6 +57,19 @@ impl<'a> DeviceEnumerator<'a> {
         unsafe { self.raw_interface.GetDevice(PCWSTR(device_id.as_ptr())) }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)
+    }
+
+    pub(crate) fn get_default(
+        &self,
+        data_flow: DataFlow,
+        role: Role,
+    ) -> Result<InterfaceWrapper<Device>, Error> {
+        unsafe {
+            self.raw_interface
+                .GetDefaultAudioEndpoint(data_flow.into(), role.into())
+        }
+        .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
+        .map_err(Error::from)
     }
 
     pub(crate) fn get_event_stream(&'a self) -> Result<DeviceEventStream<'a>, Error> {

@@ -33,17 +33,6 @@ impl<'a> DeviceEventClient<'a> {
         }
     }
 
-    fn on_device_state_changed(&self, device_id: &PCWSTR, device_state: u32) -> Result<(), Error> {
-        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
-        let device_state = device_state.try_into()?;
-        let device_event = DeviceEvent::StateChange {
-            device_id,
-            device_state,
-        };
-
-        self.sender.send(device_event).map_err(Error::from)
-    }
-
     fn on_device_added(&self, device_id: &PCWSTR) -> Result<(), Error> {
         let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
         let device = self.device_enumerator.get(&device_id)?;
@@ -55,6 +44,35 @@ impl<'a> DeviceEventClient<'a> {
     fn on_device_removed(&self, device_id: &PCWSTR) -> Result<(), Error> {
         let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
         let device_event = DeviceEvent::Remove { device_id };
+
+        self.sender.send(device_event).map_err(Error::from)
+    }
+
+    fn on_device_state_changed(&self, device_id: &PCWSTR, device_state: u32) -> Result<(), Error> {
+        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
+        let device_state = device_state.try_into()?;
+        let device_event = DeviceEvent::StateChange {
+            device_id,
+            device_state,
+        };
+
+        self.sender.send(device_event).map_err(Error::from)
+    }
+
+    fn on_default_device_changed(
+        &self,
+        device_id: &PCWSTR,
+        data_flow: EDataFlow,
+        role: ERole,
+    ) -> Result<(), Error> {
+        let device_id = unsafe { device_id.to_string() }.map_err(Error::from)?;
+        let data_flow = data_flow.try_into()?;
+        let role = role.try_into()?;
+        let device_event = DeviceEvent::DefaultDeviceChange {
+            device_id,
+            data_flow,
+            role,
+        };
 
         self.sender.send(device_event).map_err(Error::from)
     }
@@ -102,32 +120,33 @@ impl<'a> DeviceEventClient<'a> {
 }
 
 impl<'a> IMMNotificationClient_Impl for DeviceEventClient<'a> {
+    fn OnDeviceAdded(&self, device_id: &PCWSTR) -> windows::core::Result<()> {
+        self.on_device_added(device_id)
+            .map_err(|error| error.into())
+    }
+
+    fn OnDeviceRemoved(&self, device_id: &PCWSTR) -> windows::core::Result<()> {
+        self.on_device_removed(device_id)
+            .map_err(|error| error.into())
+    }
+
     fn OnDeviceStateChanged(
         &self,
         device_id: &PCWSTR,
         device_state: u32,
     ) -> windows::core::Result<()> {
-        self.on_device_state_changed(&device_id, device_state)
-            .map_err(|error| error.into())
-    }
-
-    fn OnDeviceAdded(&self, device_id: &PCWSTR) -> windows::core::Result<()> {
-        self.on_device_added(&device_id)
-            .map_err(|error| error.into())
-    }
-
-    fn OnDeviceRemoved(&self, device_id: &PCWSTR) -> windows::core::Result<()> {
-        self.on_device_removed(&device_id)
+        self.on_device_state_changed(device_id, device_state)
             .map_err(|error| error.into())
     }
 
     fn OnDefaultDeviceChanged(
         &self,
-        _data_flow: EDataFlow,
-        _role: ERole,
-        _device_id: &PCWSTR,
+        data_flow: EDataFlow,
+        role: ERole,
+        device_id: &PCWSTR,
     ) -> windows::core::Result<()> {
-        Ok(())
+        self.on_default_device_changed(device_id, data_flow, role)
+            .map_err(|error| error.into())
     }
 
     fn OnPropertyValueChanged(
