@@ -1,18 +1,18 @@
-use crate::audio::sessions::sessio_event_stream::SessionEventStream;
-use crate::audio::sessions::session_state::SessionState;
-use crate::{
-    com::{interface::Interface, runtime::Runtime},
-    error::Error,
-};
 use uuid::Uuid;
-use windows::Win32::Media::Audio::IAudioSessionEvents;
 use windows::{
     core::Vtable,
     Win32::{
         Foundation::{S_FALSE, S_OK},
-        Media::Audio::IAudioSessionControl2,
+        Media::Audio::{IAudioSessionControl2, IAudioSessionEvents},
     },
 };
+
+use crate::{
+    com::{interface::Interface, runtime::Runtime},
+    error::Error,
+};
+
+use super::{sessio_event_stream::SessionEventStream, session_state::SessionState};
 
 pub(crate) struct Session {
     id: Uuid,

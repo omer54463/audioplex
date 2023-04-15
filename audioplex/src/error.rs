@@ -1,5 +1,5 @@
-use crate::audio::properties::property_type::PropertyType;
 use std::{string::FromUtf16Error, sync::mpsc::SendError};
+
 use thiserror::Error;
 use windows::{
     core::HRESULT,
@@ -10,6 +10,8 @@ use windows::{
         UI::Shell::PropertiesSystem::PROPERTYKEY,
     },
 };
+
+use crate::audio::properties::property_type::PropertyType;
 
 #[derive(Error, Debug)]
 pub(crate) enum Error {

@@ -1,8 +1,9 @@
-use crate::error::Error;
 use windows::Win32::Media::Audio::{
     DEVICE_STATEMASK_ALL, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT,
     DEVICE_STATE_UNPLUGGED,
 };
+
+use crate::error::Error;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum DeviceState {

@@ -1,10 +1,13 @@
-use crate::audio::sessions::session_enumerator::SessionEnumerator;
-use crate::audio::sessions::session_manager_event_stream::SessionManagerEventStream;
+use windows::Win32::Media::Audio::{IAudioSessionManager2, IAudioSessionNotification};
+
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
     error::Error,
 };
-use windows::Win32::Media::Audio::{IAudioSessionManager2, IAudioSessionNotification};
+
+use super::{
+    session_enumerator::SessionEnumerator, session_manager_event_stream::SessionManagerEventStream,
+};
 
 pub(crate) struct SessionManager<'a> {
     runtime: &'a Runtime,
@@ -23,9 +26,7 @@ impl<'a> Interface<'a> for SessionManager<'a> {
 }
 
 impl<'a> SessionManager<'a> {
-    pub(crate) fn get_enumerator(
-        &self,
-    ) -> Result<InterfaceWrapper<'a, SessionEnumerator<'a>>, Error> {
+    pub(crate) fn get_enumerator(&self) -> Result<InterfaceWrapper<SessionEnumerator>, Error> {
         unsafe { self.raw_interface.GetSessionEnumerator() }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)

@@ -1,14 +1,20 @@
-use crate::audio::devices::device::Device;
-use crate::audio::devices::device_event_stream::DeviceEventStream;
-use crate::com::creatable_interface::CreatableInterface;
-use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
-use crate::{
-    audio::data_flow::DataFlow, audio::devices::device_collection::DeviceCollection,
-    audio::devices::device_state::DeviceState, error::Error,
+use windows::{
+    core::PCWSTR,
+    Win32::Media::Audio::{IMMDeviceEnumerator, IMMNotificationClient, MMDeviceEnumerator},
 };
-use windows::core::PCWSTR;
-use windows::Win32::Media::Audio::{
-    IMMDeviceEnumerator, IMMNotificationClient, MMDeviceEnumerator,
+
+use crate::{
+    audio::data_flow::DataFlow,
+    com::{
+        creatable_interface::CreatableInterface, interface::Interface,
+        interface_wrapper::InterfaceWrapper, runtime::Runtime,
+    },
+    error::Error,
+};
+
+use super::{
+    device::Device, device_collection::DeviceCollection, device_event_stream::DeviceEventStream,
+    device_state::DeviceState,
 };
 
 pub(crate) struct DeviceEnumerator<'a> {

@@ -1,11 +1,16 @@
-use crate::audio::devices::device_event::DeviceEvent;
-use crate::audio::devices::{
-    device_enumerator::DeviceEnumerator, device_event_client::DeviceEventClient,
+use std::{
+    ops::Deref,
+    sync::mpsc::{channel, Receiver},
 };
-use crate::error::Error;
-use std::ops::Deref;
-use std::sync::mpsc::{channel, Receiver};
+
 use windows::Win32::Media::Audio::IMMNotificationClient;
+
+use crate::error::Error;
+
+use super::{
+    device_enumerator::DeviceEnumerator, device_event::DeviceEvent,
+    device_event_client::DeviceEventClient,
+};
 
 pub(crate) struct DeviceEventStream<'a> {
     device_enumerator: &'a DeviceEnumerator<'a>,

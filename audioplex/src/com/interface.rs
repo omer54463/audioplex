@@ -1,4 +1,4 @@
-use crate::com::runtime::Runtime;
+use super::runtime::Runtime;
 
 pub(crate) trait Interface<'a> {
     type RawInterface: ::windows::core::Interface;

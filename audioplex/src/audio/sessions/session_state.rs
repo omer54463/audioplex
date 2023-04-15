@@ -1,7 +1,8 @@
-use crate::error::Error;
 use windows::Win32::Media::Audio::{
     AudioSessionState, AudioSessionStateActive, AudioSessionStateExpired, AudioSessionStateInactive,
 };
+
+use crate::error::Error;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum SessionState {

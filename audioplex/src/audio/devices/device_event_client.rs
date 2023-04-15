@@ -1,15 +1,20 @@
-use crate::audio::devices::device_enumerator::DeviceEnumerator;
-use crate::audio::devices::device_event::DeviceEvent;
-use crate::audio::properties::property_key::PropertyKey;
-use crate::audio::properties::property_store_access::PropertyStoreAccess;
-use crate::error::Error;
-use audioplex_implement::implement;
 use std::sync::mpsc::Sender;
-use windows::core::PCWSTR;
-use windows::Win32::Media::Audio::{
-    EDataFlow, ERole, IMMNotificationClient, IMMNotificationClient_Impl,
+
+use audioplex_implement::implement;
+use windows::{
+    core::PCWSTR,
+    Win32::{
+        Media::Audio::{EDataFlow, ERole, IMMNotificationClient, IMMNotificationClient_Impl},
+        UI::Shell::PropertiesSystem::PROPERTYKEY,
+    },
 };
-use windows::Win32::UI::Shell::PropertiesSystem::PROPERTYKEY;
+
+use crate::{
+    audio::properties::{property_key::PropertyKey, property_store_access::PropertyStoreAccess},
+    error::Error,
+};
+
+use super::{device_enumerator::DeviceEnumerator, device_event::DeviceEvent};
 
 #[implement(IMMNotificationClient)]
 pub(crate) struct DeviceEventClient<'a> {

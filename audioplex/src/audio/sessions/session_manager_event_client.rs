@@ -1,15 +1,20 @@
-use crate::audio::sessions::session::Session;
-use crate::audio::sessions::session_event::SessionEvent;
-use crate::com::interface_wrapper::InterfaceWrapper;
-use crate::com::runtime::Runtime;
-use crate::error::Error;
-use audioplex_implement::implement;
 use std::sync::mpsc::Sender;
-use windows::core::Interface;
-use windows::Win32::Media::Audio::{
-    IAudioSessionControl, IAudioSessionControl2, IAudioSessionNotification,
-    IAudioSessionNotification_Impl,
+
+use audioplex_implement::implement;
+use windows::{
+    core::Interface,
+    Win32::Media::Audio::{
+        IAudioSessionControl, IAudioSessionControl2, IAudioSessionNotification,
+        IAudioSessionNotification_Impl,
+    },
 };
+
+use crate::{
+    com::{interface_wrapper::InterfaceWrapper, runtime::Runtime},
+    error::Error,
+};
+
+use super::{session::Session, session_event::SessionEvent};
 
 #[implement(IAudioSessionNotification)]
 pub(crate) struct SessionManagerEventClient<'a> {

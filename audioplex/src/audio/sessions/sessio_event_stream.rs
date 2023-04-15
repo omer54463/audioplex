@@ -1,10 +1,15 @@
-use crate::audio::sessions::session::Session;
-use crate::audio::sessions::session_event::SessionEvent;
-use crate::audio::sessions::session_event_client::SessionEventClient;
-use crate::error::Error;
-use std::ops::Deref;
-use std::sync::mpsc::{channel, Receiver};
+use std::{
+    ops::Deref,
+    sync::mpsc::{channel, Receiver},
+};
+
 use windows::Win32::Media::Audio::IAudioSessionEvents;
+
+use crate::error::Error;
+
+use super::{
+    session::Session, session_event::SessionEvent, session_event_client::SessionEventClient,
+};
 
 pub(crate) struct SessionEventStream<'a> {
     session: &'a Session,

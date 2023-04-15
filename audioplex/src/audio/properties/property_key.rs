@@ -1,5 +1,3 @@
-use crate::audio::properties::property_type::PropertyType;
-use crate::error::Error;
 use windows::Win32::{
     Devices::{
         FunctionDiscovery::PKEY_Device_FriendlyName,
@@ -7,6 +5,10 @@ use windows::Win32::{
     },
     UI::Shell::PropertiesSystem::PROPERTYKEY,
 };
+
+use crate::error::Error;
+
+use super::property_type::PropertyType;
 
 #[derive(Clone, Copy)]
 pub(crate) enum PropertyKey {

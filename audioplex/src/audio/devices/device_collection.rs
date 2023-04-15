@@ -1,6 +1,11 @@
-use crate::com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime};
-use crate::{audio::devices::device::Device, error::Error};
 use windows::Win32::Media::Audio::IMMDeviceCollection;
+
+use crate::{
+    com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
+    error::Error,
+};
+
+use super::device::Device;
 
 pub(crate) struct DeviceCollection<'a> {
     runtime: &'a Runtime,

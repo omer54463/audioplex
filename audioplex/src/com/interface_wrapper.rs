@@ -1,8 +1,9 @@
-use crate::com::{interface::Interface, runtime::Runtime};
 use std::{
     marker::PhantomData,
     ops::{Deref, DerefMut},
 };
+
+use super::{interface::Interface, runtime::Runtime};
 
 pub(crate) struct InterfaceWrapper<'a, I: Interface<'a>> {
     interface: I,

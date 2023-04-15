@@ -1,11 +1,16 @@
-use crate::audio::sessions::session_event::SessionEvent;
-use crate::audio::sessions::session_manager::SessionManager;
-use crate::audio::sessions::session_manager_event_client::SessionManagerEventClient;
-use crate::com::runtime::Runtime;
-use crate::error::Error;
-use std::ops::Deref;
-use std::sync::mpsc::{channel, Receiver};
+use std::{
+    ops::Deref,
+    sync::mpsc::{channel, Receiver},
+};
+
 use windows::Win32::Media::Audio::IAudioSessionNotification;
+
+use crate::{com::runtime::Runtime, error::Error};
+
+use super::{
+    session_event::SessionEvent, session_manager::SessionManager,
+    session_manager_event_client::SessionManagerEventClient,
+};
 
 pub(crate) struct SessionManagerEventStream<'a> {
     session_manager: &'a SessionManager<'a>,

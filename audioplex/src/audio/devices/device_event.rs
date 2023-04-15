@@ -1,7 +1,6 @@
-use crate::{
-    audio::devices::{device::Device, device_state::DeviceState},
-    com::interface_wrapper::InterfaceWrapper,
-};
+use crate::com::interface_wrapper::InterfaceWrapper;
+
+use super::{device::Device, device_state::DeviceState};
 
 pub(crate) enum DeviceEvent<'a> {
     Add {

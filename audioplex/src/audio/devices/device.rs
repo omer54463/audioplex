@@ -48,9 +48,7 @@ impl<'a> Device<'a> {
             .map_err(Error::from)
     }
 
-    pub(crate) fn get_session_manager(
-        &self,
-    ) -> Result<InterfaceWrapper<'a, SessionManager<'a>>, Error> {
+    pub(crate) fn get_session_manager(&self) -> Result<InterfaceWrapper<SessionManager>, Error> {
         unsafe { self.raw_interface.Activate(CLSCTX_ALL, None) }
             .map(|raw_interface| self.runtime.wrap_instance(raw_interface))
             .map_err(Error::from)

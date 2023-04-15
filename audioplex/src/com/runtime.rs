@@ -1,9 +1,11 @@
-use crate::com::creatable_interface::CreatableInterface;
-use crate::{
-    com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime_mode::RuntimeMode},
-    error::Error,
-};
 use windows::Win32::System::Com::{CoCreateInstance, CoInitializeEx, CoUninitialize, CLSCTX_ALL};
+
+use crate::error::Error;
+
+use super::{
+    creatable_interface::CreatableInterface, interface::Interface,
+    interface_wrapper::InterfaceWrapper, runtime_mode::RuntimeMode,
+};
 
 pub(crate) struct Runtime {}
 

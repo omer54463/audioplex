@@ -1,11 +1,13 @@
-use crate::com::{interface::Interface, runtime::Runtime};
-use crate::{
-    audio::properties::property_key::PropertyKey, audio::properties::property_type::PropertyType,
-    error::Error,
-};
 use windows::Win32::{
     System::Com::StructuredStorage::PROPVARIANT, UI::Shell::PropertiesSystem::IPropertyStore,
 };
+
+use crate::{
+    com::{interface::Interface, runtime::Runtime},
+    error::Error,
+};
+
+use super::{property_key::PropertyKey, property_type::PropertyType};
 
 pub(crate) struct PropertyStore {
     raw_interface: IPropertyStore,

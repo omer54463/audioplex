@@ -1,6 +1,6 @@
-use crate::{audio::sessions::session_event::SessionEvent, error::Error};
-use audioplex_implement::implement;
 use std::sync::mpsc::Sender;
+
+use audioplex_implement::implement;
 use windows::{
     core::{GUID, PCWSTR},
     Win32::{
@@ -11,6 +11,10 @@ use windows::{
         },
     },
 };
+
+use crate::error::Error;
+
+use super::session_event::SessionEvent;
 
 #[implement(IAudioSessionEvents)]
 pub(crate) struct SessionEventClient<'a> {

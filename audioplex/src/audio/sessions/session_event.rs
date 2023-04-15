@@ -1,6 +1,6 @@
-use crate::audio::sessions::session::Session;
-use crate::audio::sessions::session_state::SessionState;
 use crate::com::interface_wrapper::InterfaceWrapper;
+
+use super::{session::Session, session_state::SessionState};
 
 pub(crate) enum SessionEvent<'a> {
     Add {

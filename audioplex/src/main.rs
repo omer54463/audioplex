@@ -2,14 +2,13 @@
 #![allow(dead_code)]
 #![allow(non_upper_case_globals)]
 
+use audio::{devices::device_enumerator::DeviceEnumerator, sessions::session_event::SessionEvent};
+use com::{runtime::Runtime, runtime_mode::RuntimeMode};
+use error::Error;
+
 mod audio;
 mod com;
 mod error;
-
-use crate::audio::devices::device_enumerator::DeviceEnumerator;
-use crate::audio::sessions::session_event::SessionEvent;
-use crate::com::{runtime::Runtime, runtime_mode::RuntimeMode};
-use crate::error::Error;
 
 fn main() -> Result<(), Error> {
     let runtime = Runtime::new(RuntimeMode::MultiThreaded)?;

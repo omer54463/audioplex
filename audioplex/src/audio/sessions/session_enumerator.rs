@@ -1,10 +1,11 @@
-use crate::audio::sessions::session::Session;
+use windows::{core::Interface as _Interface, Win32::Media::Audio::IAudioSessionEnumerator};
+
 use crate::{
     com::{interface::Interface, interface_wrapper::InterfaceWrapper, runtime::Runtime},
     error::Error,
 };
-use windows::core::Interface as ComInterface;
-use windows::Win32::Media::Audio::IAudioSessionEnumerator;
+
+use super::session::Session;
 
 pub(crate) struct SessionEnumerator<'a> {
     runtime: &'a Runtime,
