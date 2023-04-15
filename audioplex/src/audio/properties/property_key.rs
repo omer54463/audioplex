@@ -1,30 +1,23 @@
 use windows::Win32::{
     Devices::{
         FunctionDiscovery::PKEY_Device_FriendlyName,
-        Properties::{DEVPKEY_DeviceClass_IconPath, DEVPKEY_Device_DeviceDesc, DEVPROPKEY},
+        Properties::{
+            DEVPKEY_DeviceClass_IconPath, DEVPKEY_Device_DeviceDesc,
+            DEVPKEY_Device_LastArrivalDate, DEVPKEY_Device_LastRemovalDate, DEVPROPKEY,
+        },
     },
     UI::Shell::PropertiesSystem::PROPERTYKEY,
 };
 
 use crate::error::Error;
 
-use super::property_type::PropertyType;
-
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum PropertyKey {
     DeviceName,
     IconPath,
     DeviceDescription,
-}
-
-impl PropertyKey {
-    pub(crate) fn property_type(&self) -> PropertyType {
-        match self {
-            Self::DeviceName => PropertyType::String,
-            Self::IconPath => PropertyType::String,
-            Self::DeviceDescription => PropertyType::String,
-        }
-    }
+    LastArrivalDate,
+    LastRemovalDate,
 }
 
 impl TryFrom<PROPERTYKEY> for PropertyKey {
@@ -35,6 +28,8 @@ impl TryFrom<PROPERTYKEY> for PropertyKey {
             fmtid if fmtid == PKEY_Device_FriendlyName.fmtid => Ok(Self::DeviceName),
             fmtid if fmtid == DEVPKEY_DeviceClass_IconPath.fmtid => Ok(Self::IconPath),
             fmtid if fmtid == DEVPKEY_Device_DeviceDesc.fmtid => Ok(Self::DeviceDescription),
+            fmtid if fmtid == DEVPKEY_Device_LastArrivalDate.fmtid => Ok(Self::LastArrivalDate),
+            fmtid if fmtid == DEVPKEY_Device_LastRemovalDate.fmtid => Ok(Self::LastRemovalDate),
             _ => Err(Error::UnknownPropertyKey { property_key }),
         }
     }
@@ -46,6 +41,8 @@ impl From<PropertyKey> for PROPERTYKEY {
             PropertyKey::DeviceName => PKEY_Device_FriendlyName,
             PropertyKey::IconPath => to_property_key(DEVPKEY_DeviceClass_IconPath),
             PropertyKey::DeviceDescription => to_property_key(DEVPKEY_Device_DeviceDesc),
+            PropertyKey::LastArrivalDate => to_property_key(DEVPKEY_Device_LastArrivalDate),
+            PropertyKey::LastRemovalDate => to_property_key(DEVPKEY_Device_LastRemovalDate),
         }
     }
 }

@@ -1,13 +1,11 @@
-use windows::Win32::{
-    System::Com::StructuredStorage::PROPVARIANT, UI::Shell::PropertiesSystem::IPropertyStore,
-};
+use windows::Win32::UI::Shell::PropertiesSystem::IPropertyStore;
 
 use crate::{
     com::{interface::Interface, runtime::Runtime},
     error::Error,
 };
 
-use super::{property_key::PropertyKey, property_type::PropertyType};
+use super::{property_key::PropertyKey, property_value::PropertyValue};
 
 pub(crate) struct PropertyStore {
     raw_interface: IPropertyStore,
@@ -23,32 +21,17 @@ impl<'a> Interface<'a> for PropertyStore {
 
 impl PropertyStore {
     pub(crate) fn get_string(&self, property_key: PropertyKey) -> Result<String, Error> {
-        if property_key.property_type() == PropertyType::String {
-            unsafe {
-                self.get_property_variant(property_key)
-                    .and_then(|property_variant| Self::parse_string(property_variant))
-            }
-        } else {
-            Err(Error::UnexpectedPropertyType {
-                expected_type: PropertyType::String,
-                found_type: property_key.property_type(),
-            })
+        let property_value = self.get(property_key)?;
+
+        match property_value {
+            PropertyValue::String(string) => Ok(string),
+            _ => Err(Error::UnexpectedPropertyType { property_key }),
         }
     }
 
-    unsafe fn get_property_variant(&self, property_key: PropertyKey) -> Result<PROPVARIANT, Error> {
-        self.raw_interface
-            .GetValue(&property_key.into())
+    fn get(&self, property_key: PropertyKey) -> Result<PropertyValue, Error> {
+        unsafe { self.raw_interface.GetValue(&property_key.into()) }
             .map_err(Error::from)
-    }
-
-    unsafe fn parse_string(propvariant: PROPVARIANT) -> Result<String, Error> {
-        propvariant
-            .Anonymous
-            .Anonymous
-            .Anonymous
-            .pwszVal
-            .to_string()
-            .map_err(Error::from)
+            .and_then(|propvariant| (property_key, propvariant).try_into())
     }
 }

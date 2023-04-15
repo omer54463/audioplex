@@ -11,7 +11,7 @@ use windows::{
     },
 };
 
-use crate::audio::properties::property_type::PropertyType;
+use crate::audio::properties::property_key::PropertyKey;
 
 #[derive(Error, Debug)]
 pub(crate) enum Error {
@@ -37,11 +37,8 @@ pub(crate) enum Error {
     #[error("Unknown session state {session_state:?}")]
     UnknownSessionState { session_state: AudioSessionState },
 
-    #[error("Expected {expected_type:?}, found {found_type:?}")]
-    UnexpectedPropertyType {
-        expected_type: PropertyType,
-        found_type: PropertyType,
-    },
+    #[error("Unexpected property type for key {property_key:?}")]
+    UnexpectedPropertyType { property_key: PropertyKey },
     #[error("Unexpected HResult {hresult}")]
     UnexpectedHResult { hresult: HRESULT },
 }

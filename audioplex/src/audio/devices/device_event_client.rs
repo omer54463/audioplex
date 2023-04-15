@@ -108,6 +108,7 @@ impl<'a> DeviceEventClient<'a> {
                     description,
                 }))
             }
+            Ok(_) => Ok(None),
             Err(error) => Err(error),
         };
 

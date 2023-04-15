@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 audioplex_implement = { path = "../audioplex_implement" }
+chrono = "0.4.24"
 thiserror           = "1.0.39"
 
 [dependencies.uuid]
