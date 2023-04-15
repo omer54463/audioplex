@@ -69,8 +69,8 @@ impl<'a> Session {
         match hresult {
             S_OK => Ok(true),
             S_FALSE => Ok(false),
-            _ if let Err(error) = hresult.ok() => Err(Error::from(error)),
-            _ => Err(Error::UnexpectedHResult { hresult })
+            _ if hresult.is_err() => Err(Error::Windows(hresult.into())),
+            _ => Err(Error::UnexpectedHResult { hresult }),
         }
     }
 
